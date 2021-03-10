@@ -9,10 +9,9 @@ import './xnquery.js'
 import './xnwebglglobal.css'
 import * as THREE from './three/three.module.js'
 import { OrbitControls } from './three/OrbitControls.js';
-let earthimg = require('./img/earth1.jpg');
 let earthtexture = require('./img/earthtexture.png');
 let light = require('./img/light.png');
-import worlddata from './img/worlddata.js';
+// import worlddata from './img/worlddata.js';
 // var GIO = require('giojs');
 // console.log(Gio);
 (function (window, $) {

@@ -18,10 +18,10 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin({cleanStaleWebpackAssets:true}),
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
-            chunkFilename: '[id].css',
-        }),
+        // new MiniCssExtractPlugin({
+        //     filename: '[name].css',
+        //     chunkFilename: '[id].css',
+        // }),
         new HtmlWebpackPlugin({
             template: './index.html',
         }),
