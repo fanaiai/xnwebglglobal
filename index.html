@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>仙女座地球可视化</title>
     <style>
         body{
             background: #eee;
         }
     </style>
-    <script src="https://raw.githack.com/syt123450/giojs/master/assets/data/sampleData.js"></script>
+    <script src="../worlddata.js"></script>
+    <!--    <script src="https://raw.githack.com/syt123450/giojs/master/assets/data/sampleData.js"></script>-->
 </head>
 <body>
 <div id="globeArea" style="width: 600px; height: 600px"></div>
@@ -537,6 +538,7 @@
         {"id":"6993","ident":"08MT","type":"small_airport","name":"Matovich Airport","latitude_deg":"47.065679","longitude_deg":"-108.809624","elevation_ft":"3450","continent":"NA","iso_country":"US","iso_region":"US-MT","municipality":"Grass Range","scheduled_service":"no","gps_code":"08MT","iata_code":"","local_code":"08MT","home_link":"","wikipedia_link":"","keywords":"Clark Airport"},
         {"id":"6994","ident":"08N","type":"small_airport","name":"Keller Brothers Airport","latitude_deg":"40.29180145263672","longitude_deg":"-76.32879638671875","elevation_ft":"550","continent":"NA","iso_country":"US","iso_region":"US-PA","municipality":"Lebanon","scheduled_service":"no","gps_code":"08N","iata_code":"","local_code":"08N","home_link":"","wikipedia_link":"","keywords":""}
        ]
+    console.log(worlddata)
     var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
         data:pointdata,
     })
