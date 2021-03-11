@@ -8,12 +8,9 @@
 import './xnquery.js'
 import './xnwebglglobal.css'
 import * as THREE from './three/three.module.js'
-import { OrbitControls } from './three/OrbitControls.js';
+import {OrbitControls}  from './three/OrbitControls.js';
 let earthtexture = require('./img/earthtexture.png');
 let light = require('./img/light.png');
-// import worlddata from './img/worlddata.js';
-// var GIO = require('giojs');
-// console.log(Gio);
 (function (window, $) {
     // var that;
     var option = {
@@ -34,10 +31,93 @@ let light = require('./img/light.png');
             scene.add(earth);
             earth.add(this.countryLine());
             earth.add(this.createSphereMesh(this.option.R));
-            earth.add(this.drawPoints())
+            // earth.add(this.drawPoints())
+            // earth.add(this.addLine())
+            earth.add(this.addMarks())
             return earth;
         },
-        countryLine(){
+        addMarks(){
+            var group=new THREE.Group();
+            var loader=new THREE.FileLoader();
+            var {geometry,material}=this._getMarkMaterial();
+            loader.responseType='json';
+            loader.load('/static/airports.json',data=>{
+                data.geometries.forEach(ele=>{
+                    group.add(this._addMark(ele.coordinates,geometry,material))
+                })
+            })
+            return group;
+        },
+        _getMarkMaterial(){
+            var geometry=new THREE.PlaneBufferGeometry(60,60);
+            var textureLoader=new THREE.TextureLoader();
+            var material=new THREE.MeshBasicMaterial({
+                // color:'#ff993d',//填充白色的图片
+                map:textureLoader.load('/static/机场.png'),
+                transparent: true,
+                // side:THREE.DoubleSide
+            })
+            return {geometry,material}
+        },
+        _addMark(coord,geometry,material){
+            var mesh=new THREE.Mesh(geometry,material);
+            var position=this.lon2xyz(this.option.R,coord[0],coord[1]);
+            mesh.position.set(position.x,position.y,position.z);
+            var size=this.option.R*0.001;
+            mesh.scale.set(size,size,size)
+
+            var coordVec3=new THREE.Vector3(position.x,position.y,position.z).normalize();
+            var meshNormal=new THREE.Vector3(0,0,1);
+
+            mesh.quaternion.setFromUnitVectors(meshNormal,coordVec3)
+            return mesh;
+        },
+        addLine(){//添加线数据
+            var group=new THREE.Group();
+            var allPointArr=[];
+            var fileloader=new THREE.FileLoader();
+            fileloader.setResponseType('json');
+            fileloader.load('/static/公路.json',data=>{
+                // var a=[[[-74.75920259253698,39.14301326086365],[-74.67358541644307,39.23361784527367],[-74.64579990459447,39.31002800285745]],[[-74.64406331010395,39.31002800285745],[-74.61627779825528,39.34649648715862],[-74.55376039659603,39.410750483308504]]]
+                data.features.forEach(obj=>{
+                    if(obj.geometry.type=='LineString'){
+                        obj.geometry.coordinates=[obj.geometry.coordinates]
+                    }
+                    obj.geometry.coordinates.forEach(arr=>{
+                        var pointArr=[];
+                        arr.forEach(elem=>{
+                            var coord = this.lon2xyz(this.option.R, elem[0], elem[1])
+                            pointArr.push(coord.x, coord.y, coord.z);
+                        })
+                        allPointArr.push(pointArr[0],pointArr[1],pointArr[2],)
+                        for(let i=3;i<pointArr.length-3;i+=3){
+                            allPointArr.push(pointArr[i], pointArr[i + 1], pointArr[i + 2], pointArr[i], pointArr[i + 1], pointArr[i + 2]);
+                        }
+                        var index = pointArr.length-3;
+                        // 获取后三个数据
+                        allPointArr.push(pointArr[index], pointArr[index+1], pointArr[index+2]);
+                        // group.add(this._getLineGeo(pointArr));
+                    })
+                })
+                group.add(this._getLineGeo(allPointArr));
+            })
+            return group;
+        },
+        _getLineGeo(pointArr){
+            var geometry=new THREE.BufferGeometry();
+            var vertices=new Float32Array(pointArr);
+            var attribue = new THREE.BufferAttribute(vertices, 3);
+            geometry.attributes.position=attribue;
+            var material=new THREE.LineBasicMaterial({
+                // color: 0x33ff99//线条颜色
+                color: 0xffff00
+            });//材质对象
+            // var line = new THREE.Line(geometry, material);//线条模型对象  使用非闭合
+            // var line = new THREE.LineLoop(geometry, material);//首尾顶点连线，轮廓闭合
+            var line = new THREE.LineSegments(geometry, material);//间隔绘制直线
+            return line;
+        },
+        countryLine(){//添加国家边界数据
             var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
             //类型数组创建顶点数据
             var vertices = new Float32Array(worlddata);
@@ -47,7 +127,7 @@ let light = require('./img/light.png');
             geometry.attributes.position = attribue;
             // 线条渲染几何体顶点数据
             var material = new THREE.LineBasicMaterial({
-                color: 0x00aaaa //线条颜色
+                color: '#f4cefb' //线条颜色
             });//材质对象
             var line = new THREE.LineSegments(geometry, material);//间隔绘制直线
             line.scale.set(this.option.R,this.option.R,this.option.R);//lineData.js对应球面半径是1，需要缩放R倍
@@ -70,7 +150,7 @@ let light = require('./img/light.png');
             var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             return mesh
         },
-        addLigthRing(){
+        addLigthRing(){//添加光圈
             var textureLoader = new THREE.TextureLoader();
             var texture = textureLoader.load('./img/light.png');//加载纹理贴图
 // 创建精灵材质对象SpriteMaterial
@@ -85,83 +165,49 @@ let light = require('./img/light.png');
             // sprite.scale.set(R*4.0, R*4.0, 1);//光圈相比较地球偏大
             return sprite;
         },
-        drawPoints(){
+        drawPoints(){//添加点数据
             var loader = new THREE.FileLoader();//three.js文件加载类FileLoader：封装了XMLHttpRequest
             loader.setResponseType('json');
             var group = new THREE.Group();
-            loader.load('../airports.json', function (data) {
-                var coordArr = data;//所有经纬度坐标数据
-                var verticesArr = [];//所有顶点数据，三个元素为一组
-                for (var i = 0; i < coordArr.length; i++) {
-                    var lon = coordArr[i].longitude_deg;//经度
-                    var lat = coordArr[i].latitude_deg//纬度
-                    // 经纬度转球面坐标
-                    var coord = this.lon2xyz(R*1.001, lon, lat)
-                    verticesArr.push(coord.x, coord.y, coord.z);
+            loader.load('/static/airports_color.json',  (data)=> {
+                var coordArr = data.points;//所有经纬度坐标数据
+                var numArr = data.num;
+                var numMax = numArr.slice().sort((num1, num2) => {
+                    if (num1 < num2) {
+                        return -1;
+                    } else if (num1 > num2) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                })[numArr.length - 1];
 
-                    // 实际开发中遇到几何体顶点坐标NaN报错问题
-                    // if(!coordArr[i].longitude_deg)console.log('存在空数据')
-                    // if(coordArr[i].longitude_deg){
-                    //   var lon = coordArr[i].longitude_deg;//经度
-                    //   var lat = coordArr[i].latitude_deg//纬度
-                    //   var coord = lon2xyz(R*1.001, lon, lat)
-                    //   verticesArr.push(coord.x, coord.y, coord.z);
-                    // }
+                var verticeArr = [];
+                var colorArr = [];
+                var color2 = new THREE.Color('#ee21dd');
+                var color1 = new THREE.Color('#f4cefb');
+                for (let i = 0; i < coordArr.length; i += 2) {
+                    let coord = this.lon2xyz(this.option.R, coordArr[i], coordArr[i + 1]);
+                    verticeArr.push(coord.x, coord.y, coord.z)
+                    var percent = numArr[i / 2] / numMax * 100;
+                    if (percent > 1.0) percent = 1.0;
+                    var color = color1.clone().lerp(color2.clone(), percent);
+                    colorArr.push(color.r, color.g, color.b);
                 }
                 var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
                 //3个为一组，表示一个顶点的xyz坐标
-                var attribute = new THREE.BufferAttribute(new Float32Array(verticesArr), 3);
-                // console.log('顶点数据',attribute.count);//接近6万个点
-                // 设置几何体attributes属性的位置属性
+                var attribute = new THREE.BufferAttribute(new Float32Array(verticeArr), 3);
                 geometry.attributes.position = attribute;
+                geometry.attributes.color = new THREE.BufferAttribute(new Float32Array(colorArr), 3);
                 // 点渲染模式
                 var material = new THREE.PointsMaterial({
-                    // color: 0x33ffcc,
-                    color: 0xffff00,
-                    size: 1.0, //点尺寸
-                    // size: 1.5, //点尺寸
+                    // color: 0x22ffee,
+                    vertexColors: THREE.VertexColors, //使用顶点颜色插值计算
+                    size: 1.5 //点尺寸
                 }); //材质对象
                 var points = new THREE.Points(geometry, material); //点模型对象
                 group.add(points);
             })
-            return group;
-
-
-
-            var group = new THREE.Group();
-            var coordArr=this.option.data;
-            var verticesArr = [];//所有顶点数据，三个元素为一组
-            for (var i = 0; i < coordArr.length; i++) {
-                var lon = coordArr[i].longitude_deg;//经度
-                var lat = coordArr[i].latitude_deg//纬度
-                // 经纬度转球面坐标
-                var coord = this.lon2xyz(this.option.R*1.001, lon, lat)
-                verticesArr.push(coord.x, coord.y, coord.z);
-
-                // 实际开发中遇到几何体顶点坐标NaN报错问题
-                // if(!coordArr[i].longitude_deg)console.log('存在空数据')
-                // if(coordArr[i].longitude_deg){
-                //   var lon = coordArr[i].longitude_deg;//经度
-                //   var lat = coordArr[i].latitude_deg//纬度
-                //   var coord = lon2xyz(R*1.001, lon, lat)
-                //   verticesArr.push(coord.x, coord.y, coord.z);
-                // }
-            }
-            var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
-            //3个为一组，表示一个顶点的xyz坐标
-            var attribute = new THREE.BufferAttribute(new Float32Array(verticesArr), 3);
-            // console.log('顶点数据',attribute.count);//接近6万个点
-            // 设置几何体attributes属性的位置属性
-            geometry.attributes.position = attribute;
-            // 点渲染模式
-            var material = new THREE.PointsMaterial({
-                // color: 0x33ffcc,
-                color: 0xffff00,
-                size: 10.0, //点尺寸
-                // size: 1.5, //点尺寸
-            }); //材质对象
-            var points = new THREE.Points(geometry, material); //点模型对象
-            group.add(points);
             return group;
         },
         initThree(){
@@ -173,7 +219,7 @@ let light = require('./img/light.png');
             // scene.add(sphere)
             var mesh=this.addEarth(scene);
 
-            // scene.add(points)
+            // scene.add(this.addPlane())
 
 
             var lightring=this.addLigthRing();
@@ -206,7 +252,7 @@ let light = require('./img/light.png');
             this.dom.appendChild(renderer.domElement); //body元素中插入canvas画布
             //执行渲染操作   指定场景、相机作为参数
             this.renderer=renderer;
-            this.mesh=mesh;
+            // this.mesh=mesh;
             this.camera=camera;
             this.scene=scene;
             this.renderer.render(this.scene, this.camera);
@@ -215,7 +261,7 @@ let light = require('./img/light.png');
 
         },
         render(){
-            this.mesh.rotateY(0.001);
+            // this.mesh.rotateY(0.001);
             this.renderer.render(this.scene,this.camera);
             requestAnimationFrame(this.render.bind(this))
         },
