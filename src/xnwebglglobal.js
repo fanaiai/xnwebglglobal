@@ -309,6 +309,11 @@ let light = require('./img/light.png');
             var controls = new OrbitControls(this.camera, this.renderer.domElement);
         },
         lon2xyz(R,longitude,latitude) {
+            // return {
+            //     x:longitude,
+            //     y:latitude,
+            //     z:0
+            // }
             var lon = longitude * Math.PI / 180;//转弧度值
             var lat = latitude * Math.PI / 180;//转弧度值
             lon = -lon;// three.js坐标系z坐标轴对应经度-90度，而不是90度
