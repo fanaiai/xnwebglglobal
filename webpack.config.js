@@ -1,23 +1,24 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 module.exports = {
-    mode:'development',
+    mode: 'development',
     entry: {
-        xnwebglglobal:{
-            import:'./src/xnwebglglobal.js',
+        xnwebglglobal: {
+            import: './src/xnwebglglobal.js',
         }
     },
     // devtool:'source-map',//追踪错误源码
-    devtool:'eval-source-map',//追踪错误源码
+    devtool: 'eval-source-map',//追踪错误源码
     devServer: {
         contentBase: './dist',
     },
     plugins: [
-        new CleanWebpackPlugin({cleanStaleWebpackAssets:true}),
+        new CleanWebpackPlugin({cleanStaleWebpackAssets: true}),
         // new MiniCssExtractPlugin({
         //     filename: '[name].css',
         //     chunkFilename: '[id].css',
@@ -25,12 +26,20 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './index.html',
         }),
-        new UglifyJsPlugin()
+        new UglifyJsPlugin(),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, './static'),
+                    to: 'static',
+                },
+            ],
+        }),
     ],
     output: {
         filename: '[name].min.js',
         path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
+        // publicPath: '/',
         environment: {//输出es5的语法，用于兼容ie
             // The environment supports arrow functions ('() => { ... }').
             arrowFunction: false,
@@ -48,55 +57,37 @@ module.exports = {
             module: false,
         }
     },
-    optimization: {
-        minimizer: [
-            // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
-            // `...`,
-            // new CssMinimizerPlugin(),
-        ],
-        // moduleIds: 'deterministic',
-        // runtimeChunk: 'single',
-        // splitChunks: {
-        //     cacheGroups: {
-        //         vendor: {
-        //             test: /[\\/]node_modules[\\/]/,
-        //             name: 'vendors',
-        //             chunks: 'all',
-        //         },
-        //     },
-        // },
-    },
+    optimization: {},
     module: {
         rules: [
-            // {
-            //     test: /\.css$/,
-            //     use: [MiniCssExtractPlugin.loader, 'css-loader'],
-            // },
             {
                 test: /\.js$/,
                 loader: "babel-loader",
-                options:{
-                    presets:[
+                options: {
+                    presets: [
                         ['babel-preset-env', {
-                        targets: {
-                            browsers: ['> 1%']
-                        },
-                        debug:false
-                    }]
+                            targets: {
+                                browsers: ['> 1%']
+                            },
+                            debug: false
+                        }]
                     ]
                 }
             },
             {
                 test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
+                loader: 'css-loader',
+                options: {}
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif|json)$/i,
-                loader:'file-loader',
-                // type: 'asset/resource',
-                options: {
-                    name: 'img/[name].[ext]'
+                use: {
+                    loader: 'file-loader',
+                    options: {
+                        name: 'img/[name].[ext]'
+                    }
                 }
+
             },
             // {
             //     test: /\.(jpg|png|gif)$/i,  //i表示忽略图片格式大小写，例如.PNG
