@@ -33,39 +33,66 @@ let light = require('./img/light.png');
             earth.add(this.createSphereMesh(this.option.R));
             // earth.add(this.drawPoints())
             // earth.add(this.addLine())
-            earth.add(this.addMarks())
-            return earth;
+            var [points,WaveMeshArr]=this.addMarks()
+
+            earth.add(points)
+            return [earth,WaveMeshArr];
         },
         addMarks(){
             var group=new THREE.Group();
+            var WaveMeshArr=new THREE.Group();
             var loader=new THREE.FileLoader();
-            var {geometry,material}=this._getMarkMaterial();
-            loader.responseType='json';
-            loader.load('/static/airports.json',data=>{
-                data.geometries.forEach(ele=>{
-                    group.add(this._addMark(ele.coordinates,geometry,material))
-                })
+            var [material]=this._getMarkMaterial('/static/dot.png');
+            var [material1]=this._getMarkMaterial('/static/光柱.png');
+            var [material2]=this._getMarkMaterial('/static/光圈贴图.png');
+            hotnews.forEach(ele=>{
+                group.add(this._addLigthBar([ele.N,ele.E],material1))
+                group.add(this._addMark([ele.N,ele.E],material,this.option.R*0.0005))
+                WaveMeshArr.add(this._addMark([ele.N,ele.E],material2,this.option.R*0.001))
             })
-            return group;
+            WaveMeshArr.children.forEach(mesh=>{
+                mesh._s=Math.random()*1.0 + 1.0;
+            })
+            return [group,WaveMeshArr];
         },
-        _getMarkMaterial(){
-            var geometry=new THREE.PlaneBufferGeometry(60,60);
+        _getMarkMaterial(src){
             var textureLoader=new THREE.TextureLoader();
             var material=new THREE.MeshBasicMaterial({
                 // color:'#ff993d',//填充白色的图片
-                map:textureLoader.load('/static/机场.png'),
+                map:textureLoader.load(src),
                 transparent: true,
-                // side:THREE.DoubleSide
+                side:THREE.DoubleSide,
+                depthWrite:false,
             })
-            return {geometry,material}
+            return [material]
         },
-        _addMark(coord,geometry,material){
+        _addLigthBar(coord,material){
+            var group=new THREE.Group();
+            var height=this.option.R*0.3;
+            var geometry=new THREE.PlaneBufferGeometry(this.option.R*0.05,height);
+            geometry.rotateX(Math.PI / 2);//光柱高度方向旋转到z轴上
+            geometry.translate(0, 0, height / 2);//平移使光柱底部与XOY平面重合
+
+            var mesh=new THREE.Mesh(geometry,material);
+
+            group.add(mesh,mesh.clone().rotateZ(Math.PI / 2));
+
+            var position=this.lon2xyz(this.option.R,coord[0],coord[1]);
+            group.position.set(position.x,position.y,position.z);
+
+            var coordVec3=new THREE.Vector3(position.x,position.y,position.z).normalize();
+            var meshNormal=new THREE.Vector3(0,0,1);
+
+            group.quaternion.setFromUnitVectors(meshNormal,coordVec3)
+            return group;
+        },
+        _addMark(coord,material,size){
+            var geometry=new THREE.PlaneBufferGeometry(this.option.R,this.option.R);
             var mesh=new THREE.Mesh(geometry,material);
             var position=this.lon2xyz(this.option.R,coord[0],coord[1]);
             mesh.position.set(position.x,position.y,position.z);
-            var size=this.option.R*0.001;
             mesh.scale.set(size,size,size)
-
+            mesh.size=size;
             var coordVec3=new THREE.Vector3(position.x,position.y,position.z).normalize();
             var meshNormal=new THREE.Vector3(0,0,1);
 
@@ -217,9 +244,8 @@ let light = require('./img/light.png');
             // var lon2xyz=this.lon2xyz(100,113.5,34.5);
             // var sphere=this.addSphere(100,10,lon2xyz);
             // scene.add(sphere)
-            var mesh=this.addEarth(scene);
-
-            // scene.add(this.addPlane())
+            var [mesh,WaveMeshArr]=this.addEarth(scene);
+            scene.add(WaveMeshArr)
 
 
             var lightring=this.addLigthRing();
@@ -252,16 +278,30 @@ let light = require('./img/light.png');
             this.dom.appendChild(renderer.domElement); //body元素中插入canvas画布
             //执行渲染操作   指定场景、相机作为参数
             this.renderer=renderer;
-            // this.mesh=mesh;
+            this.mesh=mesh;
+            this.WaveMeshArr=WaveMeshArr;
             this.camera=camera;
             this.scene=scene;
             this.renderer.render(this.scene, this.camera);
 
             this.render();
+            console.log(mesh)
 
         },
         render(){
-            // this.mesh.rotateY(0.001);
+            this.mesh.rotateY(0.001);
+            this.WaveMeshArr.rotateY(0.001);
+            this.WaveMeshArr.children.forEach(mesh=>{
+                mesh._s += 0.007;
+                mesh.scale.set(mesh.size*mesh._s,mesh.size*mesh._s,mesh.size*mesh._s);
+                if (mesh._s <= 1.5) {
+                    mesh.material.opacity = (mesh._s-1) * 2;//2等于1/(1.5-1.0)，保证透明度在0~1之间变化
+                } else if (mesh._s > 1.5 && mesh._s <= 2) {
+                    mesh.material.opacity =  1 - (mesh._s - 1.5)*2;//2等于1/(2.0-1.5) mesh缩放2倍对应0 缩放1.5被对应1
+                } else {
+                    mesh._s = 1.0;
+                }
+            })
             this.renderer.render(this.scene,this.camera);
             requestAnimationFrame(this.render.bind(this))
         },
@@ -269,6 +309,11 @@ let light = require('./img/light.png');
             var controls = new OrbitControls(this.camera, this.renderer.domElement);
         },
         lon2xyz(R,longitude,latitude) {
+            // return {
+            //     x:longitude,
+            //     y:latitude,
+            //     z:0
+            // }
             var lon = longitude * Math.PI / 180;//转弧度值
             var lat = latitude * Math.PI / 180;//转弧度值
             lon = -lon;// three.js坐标系z坐标轴对应经度-90度，而不是90度
