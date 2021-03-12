@@ -60,7 +60,7 @@ let light = require('./img/light.png');
                 if (intersects.length > 0) {
                     this.chooseMesh = intersects[0].object;
                     this.label.position.copy(intersects[0].point);
-                    this.label.element.innerHTML = this.chooseMesh._origindata.name;
+                    this.label.element.innerHTML = this.chooseMesh._origindata.nameZh;
                     this.label.element.style.visibility = 'visible';
                 } else {
                     this.chooseMesh = null;
@@ -323,12 +323,13 @@ let light = require('./img/light.png');
             for(let i=lonMin;i<=lonMax;i+=gridSize){
                 for(let j=latMin;j<=latMax;j+=gridSize){
                     if(this.pointInPolygon([i,j],polygonData)){
-                        pointArr.push(i,j,0)
+                        let coord=this.lon2xyz(this.option.R,i,j)
+                        pointArr.push(coord.x,coord.y,coord.z)
                         rectPoints.push([i,j])
                     }
                 }
             }
-            // this._addPoint(pointArr)
+            this._addPoint(pointArr)
             return [...polygonData,...rectPoints];
         },
         addAllCountTryPolygon(){
@@ -336,22 +337,40 @@ let light = require('./img/light.png');
             var loader = new THREE.FileLoader();//three.js文件加载类FileLoader：封装了XMLHttpRequest
             loader.setResponseType('json');
             var group = new THREE.Group();
-            loader.load('/static/world.json',  (data)=> {
-                data.features.forEach(ele=>{
-                    if(ele.geometry.type=='Polygon'){
-                        ele.geometry.coordinates=[ele.geometry.coordinates]
-                    }
-                    var line=this.MulcountryLine(this.option.R * 1.002,ele.geometry.coordinates)
-                    var mesh=this.countryMesh(this.option.R,ele.geometry.coordinates)
-                    mesh._origindata=ele.properties
-                    this.calcMeshArry.push(mesh)
-                    group.add(mesh);
-                    group.add(line);
+            loader.load('/static/gdp.json',gdp=>{
+                var gdpColor=this.getGdpColor(gdp)
+                loader.load('/static/worldZh.json',  (data)=> {
+                    data.features.forEach(ele=>{
+                        if(ele.geometry.type=='Polygon'){
+                            ele.geometry.coordinates=[ele.geometry.coordinates]
+                        }
+                        var line=this.MulcountryLine(this.option.R * 1.002,ele.geometry.coordinates)
+                        var mesh=this.countryMesh(this.option.R,ele.geometry.coordinates)
+                        if(gdpColor[ele.properties.nameZh]){
+                            mesh.material.color.set(gdpColor[ele.properties.nameZh].color)
+                        }
+                        mesh._origindata=ele.properties
+                        this.calcMeshArry.push(mesh)
+                        group.add(mesh);
+                        group.add(line);
+                    })
                 })
             })
+
             this.label=this.addlabel();
             group.add(this.label)
             this.scene.add(group)
+        },
+        getGdpColor(data){
+            var json={
+                '中国':{
+                    color:'#ff0000'
+                },
+                '缅甸':{
+                    color:'#ffff00'
+                }
+            }
+            return json;
         },
         countryMesh(R,polygonArr) {
             var geometryArr = [];//一个国家多个轮廓，每个轮廓对应的所有几何体
@@ -387,6 +406,8 @@ let light = require('./img/light.png');
             // MeshLambertMaterial   MeshBasicMaterial
             var material = new THREE.MeshLambertMaterial({
                 color: '#adcaff',
+                transparent:true,
+                opacity:0,
                 side: THREE.DoubleSide, //背面可见，默认正面可见   THREE.DoubleSide：双面可见
             })
             var mesh = new THREE.Mesh(newGeometry, material)
@@ -487,7 +508,9 @@ let light = require('./img/light.png');
             geometry.attributes.position = attribue;
             // 线条渲染几何体顶点数据
             var material = new THREE.LineBasicMaterial({
-                color: 0x00aaaa //线条颜色
+                color: 0x00aaaa, //线条颜色
+                transparent:true,
+                opacity:0.5
             });//材质对象
             // var line = new THREE.Line(geometry, material);//线条模型对象
             var line = new THREE.LineLoop(geometry, material);//首尾顶点连线，轮廓闭合
