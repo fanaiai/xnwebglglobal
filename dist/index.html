@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>仙女座地球可视化</title>
+    <style>
+        body{
+            background: #eee;
+        }
+    </style>
+    <script src="/static/worlddata.js"></script>
+    <script src="/static/HotNewsData.js"></script>
+
+    <!--    <script src="https://raw.githack.com/syt123450/giojs/master/assets/data/sampleData.js"></script>-->
+</head>
+<body>
+<div id="globeArea" style="width: 600px; height: 600px"></div>
+<script src="xnwebglglobal.min.js"></script></body>
+<script  type="module">
+    import polygonData from '/static/polygonData.js';
+    var pointdata=[{"国家名称":"中国","值":1102},{"国家名称":"美国","值":2014},{"国家名称":"日本","值":1002},{"国家名称":"韩国","值":369},{"国家名称":"南非","值":458},{"国家名称":"意大利","值":123}]
+    var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
+        data:pointdata,
+        countryName:'国家名称',
+        lonName:'lon',
+        latName:'lat',
+        toLonName:'toLon',
+        toLatName:'toLat',
+        valueName:'值',
+        width:600,
+        height:600,
+        type:'area'
+    })
+
+</script>
+</html>

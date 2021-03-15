@@ -18,17 +18,18 @@
 </body>
 <script  type="module">
     import polygonData from '/static/polygonData.js';
-    var pointdata=[
-        {"country":"中国","value":100},
-        {"country":"印度","value":500},
-        {"country":"俄罗斯","value":8000},
-        {"country":"缅甸","value":10},
-        {"country":"美国","value":1000},
-    ]
+    var pointdata=[{"国家名称":"中国","值":1102},{"国家名称":"美国","值":2014},{"国家名称":"日本","值":1002},{"国家名称":"韩国","值":369},{"国家名称":"南非","值":458},{"国家名称":"意大利","值":123}]
     var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
         data:pointdata,
-        countryName:'country',
-        valueName:'value'
+        countryName:'国家名称',
+        lonName:'lon',
+        latName:'lat',
+        toLonName:'toLon',
+        toLatName:'toLat',
+        valueName:'值',
+        width:600,
+        height:600,
+        type:'area'
     })
 
 </script>
