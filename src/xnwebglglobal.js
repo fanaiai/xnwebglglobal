@@ -267,6 +267,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.changeColor(attr, lightBar, circleLight, wave, bar, ConeMesh, value, minNum, maxNum);//设置热点Mesh颜色
         },
         createConeMesh(attr, radius, lon, lat) {
+            if(radius<1)
+            {
+                radius=1;
+            }
             // var radius = R / 32;//圆锥半径  和地球半径建立尺寸关系
             var height = radius * attr.type.cone.ratio;//棱锥高度
             // 圆锥体几何体API(ConeGeometry)圆周方向四等分实现四棱锥效果
