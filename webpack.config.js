@@ -77,8 +77,7 @@ module.exports = (env) => {
                 },
                 {
                     test: /\.css$/i,
-                    loader: 'css-loader',
-                    options: {}
+                    use: ['style-loader', 'css-loader'],
                 },
                 {
                     test: /\.(png|svg|jpg|jpeg|gif|json)$/i,

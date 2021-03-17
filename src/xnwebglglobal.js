@@ -30,6 +30,17 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             areaColor: '#071c1c',
             areaLine: '#00ccc2',
             showLine: false,
+            hoverColor: '#ffffff',//鼠标移动至区域时的颜色
+        },
+        tooltip: {
+            "content": "<p><span class=\"bi-tooltip-field\" data-key=\"国家名称\" contenteditable=\"false\">国家名称</span>&nbsp;到&nbsp;<span class=\"bi-tooltip-field\" data-key=\"toname\" contenteditable=\"false\">toname</span>&nbsp;<span class=\"bi-tooltip-field\" data-key=\"值$$_count\" contenteditable=\"false\">值$$_count</span>元</p>",
+            "backgroundColor": "rgba(0,0,0,.8)",
+            "color": "#fff"
+        },
+        label:{
+            show:true,
+            "backgroundColor": "rgba(0,0,0,.8)",
+            "color": "#fff"
         },
         lightSphere: {
             show: true,
@@ -114,7 +125,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             }
         },
         animate: {
-            rotateStep: 0.002
+            rotateStep: 0.012
         },
     }
 
@@ -124,6 +135,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
         this.option.R = parseFloat(this.option.R)
         this.option.width = this.dom.offsetWidth;
         this.option.height = this.dom.offsetHeight;
+        this.labelArry=[];
         this.chooseMesh = null;
         this.calcMeshArry = null;
         this.setLabelRender();
@@ -134,16 +146,186 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
 
         this['add' + this.option.type]()
         this.eventList = {}
-        // this.addarea();
-        // this.addHot();
-        // this.addFly();
 
-        this.label = this.addlabel();
-        this.scene.add(this.label);
-        // this.addEvent();
+        this.tooltip = this.addtooltip();
+        this.scene.add(this.tooltip);
+        // this.addLabel(116.20, 39.55,'中国');
+        // this.addLabel(-47.55, -15.47,'巴西');
+        // this.addLabel(-77.02, 39.91,'美国');
+        this.addEvent();
+        // this.makeTextSprite('中国',{
+        //     borderThickness:0
+        // })
+
+
+
     }
 
     XNWebglGlobal.prototype = {
+        makeTextSprite(message, parameters) {
+
+            if ( parameters === undefined ) parameters = {};
+
+            var fontface = parameters.hasOwnProperty("fontface") ?
+                parameters["fontface"] : "Arial";
+
+            /* 字体大小 */
+            var fontsize = parameters.hasOwnProperty("fontsize") ?
+                parameters["fontsize"] : 28;
+
+            /* 边框厚度 */
+            var borderThickness = parameters.hasOwnProperty("borderThickness") ?
+                parameters["borderThickness"] : 4;
+
+            /* 边框颜色 */
+            var borderColor = parameters.hasOwnProperty("borderColor") ?
+                parameters["borderColor"] : { r:255, g:255, b:0, a:1.0 };
+
+            /* 背景颜色 */
+            var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+                parameters["backgroundColor"] : { r:255, g:0, b:255, a:1.0 };
+
+            /* 创建画布 */
+            var canvas = document.createElement('canvas');
+
+            var context = canvas.getContext('2d');
+
+            /* 字体加粗 */
+            context.font = "Normal " + fontsize + "px " + fontface;
+
+            /* 获取文字的大小数据，高度取决于文字的大小 */
+            var metrics = context.measureText( message );
+            var textWidth = metrics.width;
+            console.log(textWidth)
+            canvas.width=textWidth;
+            canvas.height=28;
+
+            /* 背景颜色 */
+            context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+                + backgroundColor.b + "," + backgroundColor.a + ")";
+
+            /* 边框的颜色 */
+            context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+                + borderColor.b + "," + borderColor.a + ")";
+            context.lineWidth = borderThickness;
+
+            /* 绘制圆角矩形 */
+            this.roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+
+            /* 字体颜色 */
+            context.fillStyle = "rgba(255, 255, 255, 1.0)";
+            context.fillText( message, 0, 10);
+
+            /* 画布内容用于纹理贴图 */
+            var texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            var spriteMap = new THREE.TextureLoader().load( staticpath +"/static/dot.png" );
+            var spriteMaterial = new THREE.SpriteMaterial({ map: texture ,color:'#ffffff'} );
+            var sprite = new THREE.Sprite( spriteMaterial );
+
+            // console.log(sprite.spriteMaterial);
+
+            /* 缩放比例 */
+            sprite.scale.set(56,28,0);
+            sprite.position.set(0,0,0)
+            this.scene.add(sprite)
+            return sprite;
+
+        },
+        roundRect(ctx, x, y, w, h, r) {
+
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.lineTo(x+w-r, y);
+            ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r);
+            ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+            ctx.lineTo(x+r, y+h);
+            ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+            ctx.lineTo(x, y+r);
+            ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+        },
+        addLabel(boxMesh,cont){
+
+            var div=document.createElement('div');
+            div.classList.add('xnwebglobal-label')
+
+            var worldVector = new THREE.Vector3(
+                boxMesh.position.x,
+                boxMesh.position.y,
+                boxMesh.position.z
+            );
+            var standardVector = worldVector.project(this.camera);//世界坐标转标准设备坐标
+            var a = this.option.width / 2;
+            var b = this.option.height / 2;
+            var x = Math.round(standardVector.x * a + a);//标准设备坐标转屏幕坐标
+            var y = Math.round(-standardVector.y * b + b);//标准设备坐标转屏幕坐标
+            /**
+             * 更新立方体元素位置
+             */
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+
+            // var coor=this.lon2xyz(this.option.R*1.01,lon,lat);
+            if(boxMesh.position.z<0){
+                div.style.display='none'
+                // console.log(coor,cont)
+            }
+            else{
+                div.style.display='block'
+            }
+            div.innerHTML=cont;
+            this.dom.appendChild(div)
+            this.labelArry.push({
+                dom:div,
+                mesh:boxMesh
+            })
+            // this.labelArry.push(div)
+        },
+        updataLabelPos(){
+            return;
+            var quaternion = new THREE.Quaternion();
+            quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate );
+            var worldVector = new THREE.Vector3(
+                0,
+                0,
+                1
+            );
+            worldVector.applyQuaternion( quaternion );
+            // console.log(worldVector.z,this.rotate)
+            return;
+            this.labelArry.forEach((ele)=>{
+                var div=ele.dom;
+                var boxMesh=ele.mesh.clone();
+                var quaternion = new THREE.Quaternion();
+                quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate );
+                var worldVector = new THREE.Vector3(
+                    boxMesh.position.x,
+                    boxMesh.position.y,
+                    boxMesh.position.z
+                );
+                worldVector.applyQuaternion( quaternion );
+                // console.log(standardVector)
+                // if(worldVector.z<0){
+                //     console.log(worldVector.z)
+                // }
+                var standardVector = worldVector.project(this.camera);//世界坐标转标准设备坐标
+                var a = this.option.width / 2;
+                var b = this.option.height / 2;
+                var x = Math.round(standardVector.x * a + a);//标准设备坐标转屏幕坐标
+                var y = Math.round(-standardVector.y * b + b);//标准设备坐标转屏幕坐标
+                /**
+                 * 更新立方体元素位置
+                 */
+                div.style.left = x + 'px';
+                div.style.top = y + 'px';
+                div.innerHTML=worldVector.z
+            })
+        },
         _addEarthItem(attr, isFly) {
             var textureLoader = new THREE.TextureLoader(); // TextureLoader创建一个纹理加载器对象
             var basetexture = textureLoader.load(staticpath + '/static/标注.png');
@@ -162,7 +344,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     var lonlat = obj[this.option.lonlat].split(',');//经度
                     var lon = lonlat[0]
                     var lat = lonlat[1]//纬度
-                    this.addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, obj[this.option.valueName], minNum, maxNum, isFly)
+                    this.addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, obj[this.option.valueName], minNum, maxNum, obj, isFly)
                 })
             }
             if (isFly) {//飞线时需要重新计算起点和终点的值
@@ -196,7 +378,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     this.flyArr.push(flyLine.flyLine);//获取飞线段
                     obj.$$_endData = endData[obj[this.option.toCountryName]];
                     obj.$$_startData = startData[obj[this.option.countryName]];
-                    this.addBaseItem(hotDataMesh, attr, tlon, tlat, basetexture, lightbartexture, wavetexture, obj.$$_endData, endMin, endMax, isFly)
+                    this.addBaseItem(hotDataMesh, attr, tlon, tlat, basetexture, lightbartexture, wavetexture, obj.$$_endData, endMin, endMax, obj, isFly)
                     if (obj.$$_startData) {//是起始点的时候画棱锥
                         var color = this._calcColorSeg(obj.$$_startData, startMin, startMax, attr.colors)
                         if (attr.type.cone.show) {
@@ -235,41 +417,52 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             }
             return [min, max]
         },
-        addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, isFly) {
+        addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, origindata, isFly) {
             var circleLight, lightBar, wave, bar
 
             if (attr.type['circleLight'].show) {
                 circleLight = this.createPointBaseMesh(attr, this.option.R, lon, lat, basetexture);//光柱底座矩形平面
                 hotDataMesh.add(circleLight);
+                this.calcMeshArry.push(circleLight)
+                circleLight.origindata = origindata;
+                this.addLabel(circleLight,origindata[this.option.countryName])
             }
 
             var height = 5 + this.option.R * 0.3 * value / maxNum;// 热度越高，光柱高度越高
             if (attr.type['lightBar'].show) {
                 lightBar = this.createLightPillar(attr, this.option.R, lon, lat, height, lightbartexture);//光柱
                 hotDataMesh.add(lightBar);
+                this.calcMeshArry.push(lightBar)
+                lightBar.origindata = origindata;
             }
 
             if (attr.type['wave'].show) {
                 wave = this.createWaveMesh(attr, this.option.R, lon, lat, wavetexture);//波动光圈
                 hotDataMesh.add(wave);
                 this.WaveMeshArr.push(wave);
+                this.calcMeshArry.push(wave)
+                wave.origindata = origindata;
             }
 
             if (attr.type['bar'].show) {
                 bar = this.createPrism(this.option.R, lon, lat, height, attr)
                 hotDataMesh.add(bar)
+                this.calcMeshArry.push(bar)
+                bar.origindata = origindata;
             }
             if (attr.type['cone'].show && !isFly) {
                 var ConeMesh = this.createConeMesh(this.option.R * value * attr.type['cone'].height / (maxNum), lon, lat);//棱锥
                 hotDataMesh.add(ConeMesh);
                 this.ConeMeshArry.push(ConeMesh)
+                this.calcMeshArry.push(ConeMesh)
+                ConeMesh.origindata = origindata;
             }
+            // this.addLabel(lon,lat,origindata[this.option.countryName])
             this.changeColor(attr, lightBar, circleLight, wave, bar, ConeMesh, value, minNum, maxNum);//设置热点Mesh颜色
         },
         createConeMesh(attr, radius, lon, lat) {
-            if(radius<1)
-            {
-                radius=1;
+            if (radius < 1) {
+                radius = 1;
             }
             // var radius = R / 32;//圆锥半径  和地球半径建立尺寸关系
             var height = radius * attr.type.cone.ratio;//棱锥高度
@@ -510,14 +703,19 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             var type = attr.lineType;
             var dashSize = attr.dashSize;
             var gapSize = attr.gapSize;
-            var material = new THREE['Line' + type + 'Material'](
-                {
+            var materialoption = {
+                color: attr.color || '#ffffff',
+            }
+            if (type == 'Dashed') {
+                var materialoption = {
                     color: attr.color || '#ffffff',
                     dashSize: dashSize,
                     gapSize: gapSize,
                     scale: 1,
-                    // linewidth:this.option.attr.fly.type.flyLine.width||3
                 }
+            }
+            var material = new THREE['Line' + type + 'Material'](
+                materialoption
             );//线条材质
             if (type == 'Dashed') {
                 var line = new THREE.LineSegments(geometry, material);//线条模型对象
@@ -701,6 +899,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     this.calcMeshArry.push(mesh);
                     // mesh.name = country.properties.name;//设置每个国家mesh对应的国家英文名
                     mesh.name = country.properties.nameZh;//设置每个国家mesh对应的中文名
+                    mesh.meshType = 'area'
                     // console.log(dataColor)
                     if (!isNotArea) {
                         if (dataColor[mesh.name]) {//worldZh.json部分国家或地区在gdp.json文件中不存在，判断下，以免报错
@@ -918,8 +1117,8 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             var k = width / height;
             var s = 180;
             var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-            camera.position.set(103, 45, 200); //相机在Three.js坐标系中的位置
-            camera.lookAt(103, 45, 0);//注意多边形轮廓不居中问题
+            camera.position.set(0, 0, 200); //相机在Three.js坐标系中的位置
+            camera.lookAt(0, 0, 0);//注意多边形轮廓不居中问题
             // camera.position.set(-102, 205, -342); //相机在Three.js坐标系中的位置
             // camera.lookAt(0, 0, 0); //相机指向Three.js坐标系原点
             var renderer = new THREE.WebGLRenderer({
@@ -938,7 +1137,9 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.camera = camera;
             this.scene = scene;
             this.renderer.render(this.scene, this.camera);
+            this.rotate=0;
             this.render();
+
 
         },
         render() {
@@ -969,8 +1170,15 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     mesh.rotation.z += 0.02
                 })
             }
-            if (this.earth) {
-                this.earth.rotateY(this.option.animate.rotateStep);
+            if (this.earth && !this.chooseMesh) {
+                this.rotate+=this.option.animate.rotateStep;
+                if(this.rotate>=Math.PI*2){
+                    this.rotate=0;
+                }
+                // this.earth.rotateY(this.option.animate.rotateStep);//有叠加，在反复，奇怪了
+                this.earth.rotation.y=this.rotate;
+                // this.rotate+=0.1;
+                this.updataLabelPos();
             }
             this.labelRenderer.render(this.scene, this.camera)
             this.renderer.render(this.scene, this.camera);
@@ -1000,6 +1208,24 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 x: x,
                 y: y,
                 z: z,
+            };
+        },
+        worldpos2xy(){
+            let projector = new THREE.Projector();
+
+            let world_vector = new THREE.Vector3(0,0,1);
+
+            let vector = world_vector.project(this.camera);
+            let halfWidth = window.innerWidth / 2,
+
+                halfHeight = window.innerHeight / 2;
+
+            return {
+
+                x: Math.round(vector.x * halfWidth + halfWidth),
+
+                y: Math.round(-vector.y * halfHeight + halfHeight)
+
             };
         },
         pointInPolygon(point, vs) {
@@ -1090,7 +1316,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
         },
         setLabelRender() {
             var labelRenderer = new CSS2DRenderer();
-            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(this.option.width, this.option.height);
             labelRenderer.domElement.style.position = 'absolute';
 // 相对鼠标单击位置偏移
             labelRenderer.domElement.style.top = '-16px';
@@ -1100,17 +1326,18 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.labelRenderer = labelRenderer;
             this.dom.appendChild(labelRenderer.domElement);
         },
-        addlabel() {
+        addtooltip() {
 // 创建div元素(作为标签)
             var div = document.createElement('div');
+            div.classList.add('xnwebglobal-tooltip')
             div.style.visibility = 'hidden';
             div.innerHTML = 'GDP';
             div.style.padding = '4px 10px';
-            div.style.color = '#fff';
-            div.style.fontSize = '16px';
+            div.style.color = this.option.tooltip.color;
+            div.style.fontSize = '14px';
             div.style.position = 'absolute';
-            div.style.backgroundColor = 'rgba(25,25,25,0.5)';
-            div.style.borderRadius = '5px';
+            div.style.backgroundColor = this.option.tooltip.backgroundColor;
+            div.style.borderRadius = '2px';
             //div元素包装为CSS2模型对象CSS2DObject
             var label = new CSS2DObject(div);
             div.style.pointerEvents = 'none';//避免HTML标签遮挡三维场景的鼠标事件
@@ -1121,7 +1348,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
         addEvent() {
             var choosePointMesh = e => {
                 if (this.chooseMesh) {
-                    this.label.element.style.visibility = 'hidden';
+                    if (this.chooseMesh.meshType == 'area') {
+                        this.chooseMesh.material.color.set(this.chooseMesh.color)
+                    }
+                    this.tooltip.element.style.visibility = 'hidden';
                     // this.chooseMesh.material.color.set('#ffffff')
                 }
                 var Sx = event.clientX - this.dom.getBoundingClientRect().left; //鼠标单击位置横坐标
@@ -1142,15 +1372,24 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 // intersects.length大于0说明，说明选中了模型
                 if (intersects.length > 0) {
                     this.chooseMesh = intersects[0].object;
-                    this.label.position.copy(intersects[0].point);
-                    this.label.element.innerHTML = '哈哈哈';
-                    this.label.element.innerHTML = this.chooseMesh.name;
-                    this.label.element.style.visibility = 'visible';
+                    this.tooltip.position.copy(intersects[0].point);
+                    // console.log(intersects[0].point)
+                    this.tooltip.element.innerHTML = this.chooseMesh.name;
+                    this.tooltip.element.style.visibility = 'visible';
+                    if (this.chooseMesh.meshType == 'area') {
+                        // console.log(this.chooseMesh)
+                        this.chooseMesh.material.color.set(this.option.baseGlobal.hoverColor)
+                    }
+                    if (this.chooseMesh.origindata) {
+                        var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
+                        this.tooltip.element.innerHTML = content;
+                    }
+
                 } else {
                     this.chooseMesh = null;
                 }
             }
-            // addEventListener('mousemove',choosePointMesh)
+            addEventListener('mousemove', choosePointMesh)
 
             addEventListener('click', e => {
                 choosePointMesh(e)
@@ -1159,6 +1398,23 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 }
             })
             // this.addResizeEvent();
+        },
+        calcTextTooltip: function (content, v) {
+            var that = this;
+            var html = document.createElement('div')
+            html.innerHTML = content;
+            html.querySelectorAll(".bi-tooltip-field").forEach(function (el) {
+                var field = el.getAttribute("data-key");
+                while (el.childNodes.length > 1) {
+                    el = el.childNodes[1]
+                }
+                if (v[field] != undefined) {
+                    el.innerHTML = (v[field]);
+                } else {
+                    el.innerHTML = ''
+                }
+            })
+            return html.innerHTML;
         },
         addResizeEvent() {
             addEventListener('resize', e => {

@@ -8,6 +8,7 @@
             background: #eee;
         }
         #globeArea{
+            position: relative;
             /*background:url(/static/机场.png);*/
         }
     </style>
@@ -24,13 +25,13 @@
     import polygonData from '/static/polygonData.js';
     var pointdata=[{"国家名称":"中国","值":1102},{"国家名称":"美国","值":2014},{"国家名称":"日本","值":1002},{"国家名称":"韩国","值":369},{"国家名称":"南非","值":458},{"国家名称":"意大利","值":123}]
     pointdata=[
-        {
-            "国家名称": "中国",
-            "toname": "澳大利亚",
-            "tolonlat": "149.08, -35.15",
-            "值": 1102,
-            "lonlat": "116.20, 39.55"
-        },
+        // {
+        //     "国家名称": "中国",
+        //     "toname": "澳大利亚",
+        //     "tolonlat": "149.08, -35.15",
+        //     "值": 1102,
+        //     "lonlat": "116.20, 39.55"
+        // },
         {
             "国家名称": "美国",
             "toname": "牙买加",
@@ -38,34 +39,34 @@
             "值": 2014,
             "lonlat": "-77.02, 39.91"
         },
-        {
-            "国家名称": "日本",
-            "toname": "约旦",
-            "tolonlat": "35.52, 31.57",
-            "值": 1002,
-            "lonlat": "139.46, 35.42"
-        },
-        {
-            "国家名称": "韩国",
-            "toname": "中国",
-            "tolonlat": "116.20, 39.55",
-            "值": 369,
-            "lonlat": "126.58, 37.31"
-        },
-        {
-            "国家名称": "南非",
-            "toname": "美国",
-            "tolonlat": "-77.02, 39.91",
-            "值": 458,
-            "lonlat": "28,-25"
-        },
-        {
-            "国家名称": "意大利",
-            "toname": "中国",
-            "tolonlat": "116.20, 39.55",
-            "值": 123,
-            "lonlat": "12.29, 41.54"
-        }
+        // {
+        //     "国家名称": "日本",
+        //     "toname": "约旦",
+        //     "tolonlat": "35.52, 31.57",
+        //     "值": 1002,
+        //     "lonlat": "139.46, 35.42"
+        // },
+        // {
+        //     "国家名称": "韩国",
+        //     "toname": "中国",
+        //     "tolonlat": "116.20, 39.55",
+        //     "值": 369,
+        //     "lonlat": "126.58, 37.31"
+        // },
+        // {
+        //     "国家名称": "南非",
+        //     "toname": "美国",
+        //     "tolonlat": "-77.02, 39.91",
+        //     "值": 458,
+        //     "lonlat": "28,-25"
+        // },
+        // {
+        //     "国家名称": "意大利",
+        //     "toname": "中国",
+        //     "tolonlat": "116.20, 39.55",
+        //     "值": 123,
+        //     "lonlat": "12.29, 41.54"
+        // }
     ]
     var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
         data:pointdata,
@@ -74,7 +75,24 @@
         lonlat:'lonlat',
         toLonlat:'tolonlat',
         valueName:'值',
-        type:'fly'
+        type:'hot',
+        baseGlobal: {
+            color: '#000000',
+            opacity: 0,
+            countryPolygonType: 'area',//grid,area
+            gridSize: 2,
+            gridStep: 2,
+            gridColor: '#00ccc2',
+            areaColor: '#071c1c',
+            areaLine: '#ffccc2',
+            showLine: true,
+        },
+        tooltip: {
+            "content": "<p><span class=\"bi-tooltip-field\" data-key=\"国家名称\" contenteditable=\"false\">国家名称</span>&nbsp;到&nbsp;<span class=\"bi-tooltip-field\" data-key=\"toname\" contenteditable=\"false\">toname</span>&nbsp;<span class=\"bi-tooltip-field\" data-key=\"值\" contenteditable=\"false\">值$$_count</span>元</p>",
+            "backgroundColor": "rgba(0,0,0,.8)",
+            "auto": false,
+            "color": "#fff"
+        },
     })
 
 </script>
