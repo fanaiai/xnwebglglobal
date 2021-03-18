@@ -284,35 +284,51 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 dom:div,
                 mesh:boxMesh
             })
-            // this.labelArry.push(div)
+            console.log(this.labelArry)
         },
         updataLabelPos(){
-            return;
-            var quaternion = new THREE.Quaternion();
-            quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate );
-            var worldVector = new THREE.Vector3(
-                0,
-                0,
-                1
-            );
-            worldVector.applyQuaternion( quaternion );
+            // return;
+            // var quaternion = new THREE.Quaternion();
+            // quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate );
+            // var worldVector = new THREE.Vector3(
+            //     0,
+            //     0,
+            //     1
+            // );
+            // worldVector.applyQuaternion( quaternion );
+            // var standardVector = worldVector.project(this.camera);//世界坐标转标准设备坐标
             // console.log(worldVector.z,this.rotate)
-            return;
+            // return;
+            // console.log(this.controls.getAzimuthalAngle())
             this.labelArry.forEach((ele)=>{
                 var div=ele.dom;
                 var boxMesh=ele.mesh.clone();
                 var quaternion = new THREE.Quaternion();
-                quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate );
+                quaternion.setFromAxisAngle( new THREE.Vector3( 0, 1, 0 ), this.rotate);
+                // quaternion.setFromEuler(new THREE.Euler( 0, this.rotate+this.controls.getAzimuthalAngle(), 0, 'XYZ' ))
+                // var coordVec3 = new THREE.Vector3(coord.x, coord.y, coord.z).normalize();
+                // mesh默认在XOY平面上，法线方向沿着z轴new THREE.Vector3(0, 0, 1)
+                // var meshNormal = new THREE.Vector3(0, 0, 1);
+                // quaternion.setFromUnitVectors(meshNormal,coordVec3)
+                // quaternion.setFromAxisAngle( new THREE.Vector3( 1,0, 0), this.controls.getPolarAngle());
                 var worldVector = new THREE.Vector3(
                     boxMesh.position.x,
                     boxMesh.position.y,
                     boxMesh.position.z
                 );
+                // var worldVector = new THREE.Vector3(
+                //     0,
+                //     0,
+                //     1
+                // );
                 worldVector.applyQuaternion( quaternion );
-                // console.log(standardVector)
-                // if(worldVector.z<0){
-                //     console.log(worldVector.z)
-                // }
+
+                if(worldVector.z<0){
+                    div.style.display='none'
+                }
+                else{
+                    div.style.display='block'
+                }
                 var standardVector = worldVector.project(this.camera);//世界坐标转标准设备坐标
                 var a = this.option.width / 2;
                 var b = this.option.height / 2;
@@ -323,7 +339,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                  */
                 div.style.left = x + 'px';
                 div.style.top = y + 'px';
-                div.innerHTML=worldVector.z
+                div.innerHTML=standardVector.z
             })
         },
         _addEarthItem(attr, isFly) {
@@ -1185,9 +1201,9 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.animationId = requestAnimationFrame(this.render.bind(this))
         },
         addControl() {
-            var controls = new OrbitControls(this.camera, this.renderer.domElement);
+            this.controls = new OrbitControls(this.camera, this.renderer.domElement);
             // controls.target.set(103, 45, 0);
-            controls.update();
+            this.controls.update();
         },
         lon2xyz(R, longitude, latitude) {
             // return {
