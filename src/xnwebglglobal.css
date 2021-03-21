@@ -9,4 +9,5 @@ body{
     position: absolute;
     color: #fff;
     background: blue;
+    pointer-events: none;
 }
