@@ -1,7 +1,7 @@
 body{
 
 }
-.xnwebglobal-tooltip p{
+.xnwebglobal-tooltip p,.xnwebglobal-label p{
     margin:0;
     line-height: 1.4;
 }
@@ -10,4 +10,6 @@ body{
     color: #fff;
     background: blue;
     pointer-events: none;
+    font-size: 12px;
+    padding:4px 6px;
 }

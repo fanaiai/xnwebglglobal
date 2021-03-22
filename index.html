@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <title>仙女座地球可视化</title>
     <style>
-        body{
+        body {
             background: #eee;
         }
-        #globeArea{
+
+        #globeArea {
             position: relative;
+            transform: scale(1,.6);
             /*background:url(/static/机场.png);*/
         }
     </style>
@@ -19,80 +21,349 @@
 
 </head>
 <body>
-<div id="globeArea" style="width: 600px; height: 600px"></div>
+<a id="destory">销毁</a>
+<div id="globeArea" style="width: 800px; height: 800px"></div>
 </body>
-<script  type="module">
+<script type="module">
     import polygonData from '/static/polygonData.js';
-    var pointdata=[{"国家名称":"中国","值":1102},{"国家名称":"美国","值":2014},{"国家名称":"日本","值":1002},{"国家名称":"韩国","值":369},{"国家名称":"南非","值":458},{"国家名称":"意大利","值":123}]
-    pointdata=[
-        {
-            "国家名称": "中国",
-            "toname": "澳大利亚",
-            "tolonlat": "149.08, -35.15",
-            "值": 1102,
-            "lonlat": "116.20, 39.55"
+
+    // var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
+    //     data:pointdata,
+    //     countryName:'国家名称',
+    //     toCountryName:'toname',
+    //     lonlat:'lonlat',
+    //     toLonlat:'tolonlat',
+    //     valueName:'值',
+    //     type:'fly',
+    //     baseGlobal: {
+    //         color: '#000000',
+    //         opacity: 0,
+    //         countryPolygonType: 'area',//grid,area
+    //         gridSize: 2,
+    //         gridStep: 2,
+    //         gridColor: '#00ccc2',
+    //         areaColor: '#071c1c',
+    //         areaLine: '#ffccc2',
+    //         showLine: true,
+    //     },
+    //     tooltip: {
+    //         "content": "<p><span class=\"bi-tooltip-field\" data-key=\"国家名称\" contenteditable=\"false\">国家名称</span>&nbsp;到&nbsp;<span class=\"bi-tooltip-field\" data-key=\"toname\" contenteditable=\"false\">toname</span>&nbsp;<span class=\"bi-tooltip-field\" data-key=\"值\" contenteditable=\"false\">值$$_count</span>元</p>",
+    //         "backgroundColor": "rgba(0,0,0,.8)",
+    //         "auto": false,
+    //         "color": "#fff"
+    //     },
+    //     animate:{
+    //         rotateStep:0.012,
+    //     }
+    // })
+    var option = {
+        "baseGlobal": {
+            "gridSize": 2,
+            "color": "#000000",
+            "areaColor": "rgba(0,39,81,1)",
+            "gridStep": '2',
+            "gridColor": "rgba(1,87,155,1)",
+            "showLine": true,
+            "opacity": ".6",
+            "countryPolygonType": "area",
+            "areaLine": "rgba(84,145,219,1)",
+            "texture": {
+                show: false
+            }
         },
-        {
-            "国家名称": "美国",
-            "toname": "牙买加",
-            "tolonlat": "-76.50, 18.00",
-            "值": 2014,
-            "lonlat": "-77.02, 39.91"
+        "R": "130",
+        "backgroundColor": "rgba(0,39,81,1)",
+        "tooltip": {"backgroundColor": "rgba(0,0,0,.8)", "color": "#fff", "content": ""},
+        "backgroundOpacity": 1,
+        "label": {
+            "start": {
+                "backgroundColor": "rgba(8,85,139,.8)",
+                "backgroundImage": "",
+                "backgroundSize": "",
+                "borderColor": "#00B4FF",
+                "color": "#fff",
+                "borderRadius": 4,
+                "borderWidth": 1,
+                "show": true,
+                "fontSize": 12,
+                "borderStyle": "solid",
+                "padding": 4,
+                "content": "",
+            },
+            "end": {
+                "backgroundColor": "rgba(8,85,139,.8)",
+                "backgroundImage": "",
+                "backgroundSize": "",
+                "borderColor": "#00B4FF",
+                "color": "#fff",
+                "borderRadius": 4,
+                "borderWidth": 1,
+                "show": true,
+                "fontSize": 12,
+                "borderStyle": "solid",
+                "padding": 4,
+                "endContent": "<p class=\"paragraph\" style='padding:4px 6px'><span class=\"bi-label-field\" data-key=\"ZKUNNR_ZLANDX\" contenteditable=\"false\">money</span> <span class=\"bi-label-field\" data-key=\"money$$_sum\" contenteditable=\"false\">money</span>元<br></p>"
+            },
         },
-        {
-            "国家名称": "日本",
-            "toname": "约旦",
-            "tolonlat": "35.52, 31.57",
-            "值": 1002,
-            "lonlat": "139.46, 35.42"
+        "type": "fly",
+        "attr": {
+            "area": {"colors": ["#ff0000", "#ffffff"]},
+            "fly": {
+                "type": {
+                    "lightBar": {"show": true, "width": 0.12},
+                    "bar": {"radiusBottom": 2, "show": false, "radiusTop": 2, "segments": "4"},
+                    "flyLine": {
+                        "dashSize": 3,
+                        "color": "rgba(71,220,240,1)",
+                        "lineType": "Dashed",
+                        "show": true,
+                        "width": 1,
+                        "gapSize": 1
+                    },
+                    "flyPoint": {"pointSize": 6, "color": "rgba(255,167,38,1)", "len": 0.2, "show": true},
+                    "cone": {"show": true, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["rgba(231,96,28,1)", "#ffff4a", "rgba(127,222,234,1)"]
+            },
+            "hot": {
+                "type": {
+                    "lightBar": {"show": true, "width": 0.12},
+                    "bar": {"radiusBottom": 4, "show": false, "radiusTop": 4, "segments": 4},
+                    "cone": {"show": false, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["#2c8ad7", "#3bd5ac", "#d5860c"]
+            }
         },
-        {
-            "国家名称": "韩国",
-            "toname": "中国",
-            "tolonlat": "116.20, 39.55",
-            "值": 369,
-            "lonlat": "126.58, 37.31"
+        "animate": {"rotateStep": "0.013", "open": true},
+        "lightSphere": {"color": "rgba(24,87,155,1)", "show": true, "opacity": "3"},
+        "data": [{
+            "zuobiao": "77.13,28.37",
+            "ZKUNNR_ZLANDX": "印度",
+            "money$$_sum": 5758386.75,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "576万"
+        }, {
+            "zuobiao": "114.10,22.20",
+            "ZKUNNR_ZLANDX": "中国香港",
+            "money$$_sum": 6912509.8,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "691万"
+        }, {
+            "zuobiao": "12.34,55.41",
+            "ZKUNNR_ZLANDX": "丹麦",
+            "money$$_sum": 7257241.69,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "726万"
+        }, {
+            "zuobiao": "-77.02,39.91",
+            "ZKUNNR_ZLANDX": "美国",
+            "money$$_sum": 2392107.99,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "239万"
+        }, {
+            "zuobiao": "4.54,52.23",
+            "ZKUNNR_ZLANDX": "荷兰",
+            "money$$_sum": 112812,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "11万"
+        }, {
+            "zuobiao": "114.3,48.04",
+            "ZKUNNR_ZLANDX": "蒙古",
+            "money$$_sum": 360000,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "36万"
+        }, {
+            "zuobiao": "100.35,13.45",
+            "ZKUNNR_ZLANDX": "泰国",
+            "money$$_sum": 999600,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "100万"
+        }, {
+            "zuobiao": "103.45,1.22",
+            "ZKUNNR_ZLANDX": "新加坡",
+            "money$$_sum": 43958000,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "4,396万"
+        }, {
+            "zuobiao": "32.54,39.57",
+            "ZKUNNR_ZLANDX": "土耳其",
+            "money$$_sum": 7080000,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "708万"
+        }, {
+            "zuobiao": "10.11,36.5",
+            "ZKUNNR_ZLANDX": "突尼斯",
+            "money$$_sum": 1006400,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "101万"
+        }, {
+            "zuobiao": "73.1,33.4",
+            "ZKUNNR_ZLANDX": "巴基斯坦",
+            "money$$_sum": 517500,
+            "countryname": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "52万"
+        }],
+        "countryName": "countryname",
+        "lonlat": "lonlat",
+        "toLonlat": "zuobiao",
+        "valueName": "money$$_sum",
+        "toCountryName": "ZKUNNR_ZLANDX",
+        "formatValue": '$$_formatValue'
+    }
+    option = {
+        "baseGlobal": {
+            "gridSize": 2,
+            "color": "#000000",
+            "areaColor": "#071c1c",
+            "gridStep": 2,
+            "gridColor": "#00ccc2",
+            "showLine": false,
+            "opacity": 1,
+            "countryPolygonType": "grid",
+            "areaLine": "#00ccc2"
         },
-        {
-            "国家名称": "南非",
-            "toname": "美国",
-            "tolonlat": "-77.02, 39.91",
-            "值": 458,
-            "lonlat": "28,-25"
+        "R": 100,
+        "backgroundColor": "#000000",
+        "tooltip": {"backgroundColor": "rgba(0,0,0,.8)", "color": "#fff", "content": ""},
+        "backgroundOpacity": 1,
+        "label": {
+            "start": {
+                "padding": 4,
+                "backgroundColor": "rgba(8,85,139,.8)",
+                "borderColor": "#00B4FF",
+                "color": "#fff",
+                "borderRadius": 4,
+                "backgroundImage": "/bi/api/picture/query?pictureId=0f341a2b3d6a4347b66b0eeb12166452",
+                "borderWidth": 1,
+                "show": true,
+                "backgroundSize": "100% 100%",
+                "fontSize": 12,
+                "borderStyle": "solid",
+                "content": "<div><span class=\"bi-label-field\" data-key=\"ZKUNNR_ZLANDX\" contenteditable=\"false\">ZKUNNR_ZLANDX</span>&nbsp;<span class=\"bi-label-field\" data-key=\"money$$_sum\" contenteditable=\"false\">money$$_sum</span><br></div>"
+            },
+            "end": {
+                "padding": 4,
+                "backgroundColor": "rgba(8,85,139,.8)",
+                "borderColor": "#00B4FF",
+                "color": "#fff",
+                "borderRadius": 4,
+                "backgroundImage": "",
+                "borderWidth": 1,
+                "show": true,
+                "backgroundSize": "",
+                "fontSize": 12,
+                "borderStyle": "solid",
+                "content": ""
+            }
         },
-        {
-            "国家名称": "意大利",
-            "toname": "中国",
-            "tolonlat": "116.20, 39.55",
-            "值": 123,
-            "lonlat": "12.29, 41.54"
+        "type": "hot",
+        "attr": {
+            "area": {"colors": ["#ff0000", "#ffffff"]},
+            "fly": {
+                "type": {
+                    "lightBar": {"show": true, "width": 0.12},
+                    "bar": {"radiusBottom": 2, "show": false, "radiusTop": 2, "segments": "4"},
+                    "flyLine": {
+                        "dashSize": 3,
+                        "color": "#00ccc2",
+                        "lineType": "Basic",
+                        "show": true,
+                        "width": 1,
+                        "gapSize": 1
+                    },
+                    "flyPoint": {"pointSize": 6, "color": "#ffaa00", "len": 0.2, "show": true},
+                    "cone": {"show": true, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["#00ccc2", "#ffff4a"]
+            },
+            "hot": {
+                "type": {
+                    "lightBar": {"show": true, "width": 0.12},
+                    "bar": {"radiusBottom": 4, "show": false, "radiusTop": 4, "segments": 4},
+                    "cone": {"show": false, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["#2c8ad7", "#3bd5ac", "#d5860c"]
+            }
+        },
+        "animate": {"rotateStep": "0.012", "open": true},
+        "lightSphere": {"color": "#048989", "show": true, "opacity": 2},
+        "data": [{
+            "zuobiao": "77.13,28.37",
+            "ZKUNNR_ZLANDX": "印度",
+            "money$$_sum": 5758386.75,
+            "$$_formatValue": 5758386.75
+        }, {
+            "zuobiao": "114.10,22.20",
+            "ZKUNNR_ZLANDX": "中国香港",
+            "money$$_sum": 6912509.8,
+            "$$_formatValue": 6912509.8
+        }, {
+            "zuobiao": "12.34,55.41",
+            "ZKUNNR_ZLANDX": "丹麦",
+            "money$$_sum": 7257241.69,
+            "$$_formatValue": 7257241.69
+        }, {
+            "zuobiao": "-77.02,39.91",
+            "ZKUNNR_ZLANDX": "美国",
+            "money$$_sum": 2392107.99,
+            "$$_formatValue": 2392107.99
+        }, {
+            "zuobiao": "4.54,52.23",
+            "ZKUNNR_ZLANDX": "荷兰",
+            "money$$_sum": 112812,
+            "$$_formatValue": 112812
+        }, {
+            "zuobiao": "114.3,48.04",
+            "ZKUNNR_ZLANDX": "蒙古",
+            "money$$_sum": 360000,
+            "$$_formatValue": 360000
+        }, {
+            "zuobiao": "100.35,13.45",
+            "ZKUNNR_ZLANDX": "泰国",
+            "money$$_sum": 999600,
+            "$$_formatValue": 999600
+        }, {
+            "zuobiao": "103.45,1.22",
+            "ZKUNNR_ZLANDX": "新加坡",
+            "money$$_sum": 43958000,
+            "$$_formatValue": 43958000
+        }, {
+            "zuobiao": "32.54,39.57",
+            "ZKUNNR_ZLANDX": "土耳其",
+            "money$$_sum": 7080000,
+            "$$_formatValue": 7080000
+        }, {
+            "zuobiao": "10.11,36.5",
+            "ZKUNNR_ZLANDX": "突尼斯",
+            "money$$_sum": 1006400,
+            "$$_formatValue": 1006400
+        }, {"zuobiao": "73.1,33.4", "ZKUNNR_ZLANDX": "巴基斯坦", "money$$_sum": 517500, "$$_formatValue": 517500}],
+        "countryName": "ZKUNNR_ZLANDX",
+        "lonlat": "zuobiao",
+        "valueName": "money$$_sum",
+        "formatValue": "$$_formatValue"
+    };
+    var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"), option)
+    document.querySelector('#destory').addEventListener('click', e => {
+        if (xnwebglglobal) {
+            xnwebglglobal.destory();
         }
-    ]
-    var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"),{
-        data:pointdata,
-        countryName:'国家名称',
-        toCountryName:'toname',
-        lonlat:'lonlat',
-        toLonlat:'tolonlat',
-        valueName:'值',
-        type:'fly',
-        baseGlobal: {
-            color: '#000000',
-            opacity: 0,
-            countryPolygonType: 'area',//grid,area
-            gridSize: 2,
-            gridStep: 2,
-            gridColor: '#00ccc2',
-            areaColor: '#071c1c',
-            areaLine: '#ffccc2',
-            showLine: true,
-        },
-        tooltip: {
-            "content": "<p><span class=\"bi-tooltip-field\" data-key=\"国家名称\" contenteditable=\"false\">国家名称</span>&nbsp;到&nbsp;<span class=\"bi-tooltip-field\" data-key=\"toname\" contenteditable=\"false\">toname</span>&nbsp;<span class=\"bi-tooltip-field\" data-key=\"值\" contenteditable=\"false\">值$$_count</span>元</p>",
-            "backgroundColor": "rgba(0,0,0,.8)",
-            "auto": false,
-            "color": "#fff"
-        },
+        xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"), option)
     })
 
 </script>

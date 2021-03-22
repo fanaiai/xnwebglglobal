@@ -13,7 +13,7 @@ module.exports = (env) => {
                 import: './src/xnwebglglobal.js',
             }
         },
-        // devtool:'source-map',//追踪错误源码
+        // devtool:'eval-source-map',//追踪错误源码
         devtool: env.production ? 'source-map' : 'eval-source-map',//追踪错误源码
         devServer: {
             contentBase: './dist',
