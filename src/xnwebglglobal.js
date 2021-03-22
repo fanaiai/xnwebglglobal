@@ -1153,11 +1153,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.renderer.render(this.scene, this.camera);
             this.rotate = 0;
             this.render();
-
-
         },
         render() {
             if (!this.scene) {
+                cancelAnimationFrame(this.animationId)
                 return;
             }
             if (this.flyArr && this.option.attr.fly.type.flyPoint) {
@@ -1480,8 +1479,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.scene = null;
             this.camera = null;
             this.controls = null;
+            this.id=null;
             cancelAnimationFrame(this.animationId)
             this.animationId = null;
+            console.log('怎么回事啊',this.id,this.animationId)
             removeEventListener('mousemove', this.choosePointMesh)
             removeEventListener('click', this.clickPointMesh)
         }
