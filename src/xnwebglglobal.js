@@ -30,9 +30,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             areaColor: '#071c1c',
             areaLine: '#00ccc2',
             showLine: false,
+            showArea: true,
             hoverColor: '#ffffff',//鼠标移动至区域时的颜色
             texture: {
-                show: true,
+                show: false,
                 img: ''
             }
         },
@@ -42,7 +43,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             "color": "#fff"
         },
         "label": {
-            "start":{
+            "start": {
                 "backgroundColor": "rgba(8,85,139,.8)",
                 "backgroundImage": "",
                 "backgroundSize": "",
@@ -53,10 +54,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 "show": true,
                 "fontSize": 12,
                 "borderStyle": "solid",
-                "padding":4,
+                "padding": 4,
                 "content": "",
             },
-            "end":{
+            "end": {
                 "backgroundColor": "rgba(8,85,139,.8)",
                 "backgroundImage": "",
                 "backgroundSize": "",
@@ -67,8 +68,8 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 "show": true,
                 "fontSize": 12,
                 "borderStyle": "solid",
-                "padding":4,
-                "content":"<p class=\"paragraph\" style='padding:4px 6px'><span class=\"bi-label-field\" data-key=\"ZKUNNR_ZLANDX\" contenteditable=\"false\">money</span> <span class=\"bi-label-field\" data-key=\"money$$_sum\" contenteditable=\"false\">money</span>元<br></p>"
+                "padding": 4,
+                "content": "<p class=\"paragraph\" style='padding:4px 6px'><span class=\"bi-label-field\" data-key=\"ZKUNNR_ZLANDX\" contenteditable=\"false\">money</span> <span class=\"bi-label-field\" data-key=\"money$$_sum\" contenteditable=\"false\">money</span>元<br></p>"
             },
         },
         lightSphere: {
@@ -220,7 +221,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
              */
             div.style.left = x + 'px';
             div.style.top = y + 'px';
-            this._setLabelStyle(div,this.option.label[content]);
+            this._setLabelStyle(div, this.option.label[content]);
 
             // var coor=this.lon2xyz(this.option.R*1.01,lon,lat);
             if (position.z < 0) {
@@ -245,21 +246,23 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 if (field == that.option.valueName && that.option.formatValue) {
                     field = that.option.formatValue;
                 }
-                while (el.childNodes.length > 1) {
-                    el = el.childNodes[1]
+                if (el && el.children) {
+                    while (el && el.children.length >= 1) {
+                        el = el.children[0]
+                    }
                 }
                 if (v[field] != undefined) {
-                    el.innerHTML = (v[field]);
+                    el.innerText = (v[field]);
                 } else {
-                    el.innerHTML = ''
+                    el.innerText = ''
                 }
             })
             return html.innerHTML;
         },
-        _setLabelStyle(div,css) {
+        _setLabelStyle(div, css) {
 
             div.style.backgroundColor = css.backgroundColor;
-            div.style.backgroundImage = css.backgroundImage;
+            div.style.backgroundImage = 'url('+css.backgroundImage+')';
             div.style.backgroundSize = css.backgroundSize;
             div.style.fontSize = css.fontSize;
             div.style.lineHeight = css.lineHeight;
@@ -885,35 +888,32 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                         country.geometry.coordinates = [country.geometry.coordinates];
                     }
                     // 解析所有封闭轮廓边界坐标country.geometry.coordinates
-                    // R * 1.001比地球R稍大，以免深度冲突
-                    var mesh = this.countryMesh(this.option.R * 1.001, country.geometry.coordinates);//国家轮廓mesh
                     if (this.option.baseGlobal.showLine) {
                         var line = this.countryLine(this.option.R * 1.002, country.geometry.coordinates);//国家边界
 
                         this.earth.add(line);//国家边界集合插入earth中
                     }
-                    this.earth.add(mesh);//国家Mesh集合插入earth中
-                    // this.earth.add(grid);//国家Mesh集合插入earth中
-                    this.calcMeshArry.push(mesh);
-                    // mesh.name = country.properties.name;//设置每个国家mesh对应的国家英文名
-                    mesh.name = country.properties.nameZh;//设置每个国家mesh对应的中文名
-                    mesh.meshType = 'area'
-                    // console.log(dataColor)
-                    if (!isNotArea) {
-                        if (dataColor[mesh.name]) {//worldZh.json部分国家或地区在gdp.json文件中不存在，判断下，以免报错
-                            mesh.material.color.copy(dataColor[mesh.name].color);
-                            mesh.color = dataColor[mesh.name].color;//自定义颜色属性 用于射线拾取交互
-                            mesh.origindata = dataColor[mesh.name].origindata;//自定义颜色属性 用于射线拾取HTML标签显示
+                    if (this.option.baseGlobal.showArea) {
+                        var mesh = this.countryMesh(this.option.R * 1.001, country.geometry.coordinates);//国家轮廓mesh
+                        this.earth.add(mesh);//国家Mesh集合插入earth中
+                        this.calcMeshArry.push(mesh);
+                        mesh.name = country.properties.nameZh;//设置每个国家mesh对应的中文名
+                        mesh.meshType = 'area'
+                        if (!isNotArea) {
+                            if (dataColor[mesh.name]) {//worldZh.json部分国家或地区在gdp.json文件中不存在，判断下，以免报错
+                                mesh.material.color.copy(dataColor[mesh.name].color);
+                                mesh.color = dataColor[mesh.name].color;//自定义颜色属性 用于射线拾取交互
+                                mesh.origindata = dataColor[mesh.name].origindata;//自定义颜色属性 用于射线拾取HTML标签显示
+                            } else {
+                                mesh.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
+                                mesh.color = mesh.material.color.clone();//自定义颜色属性 用于射线拾取交互
+                            }
                         } else {
                             mesh.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
                             mesh.color = mesh.material.color.clone();//自定义颜色属性 用于射线拾取交互
+                            // this.addLabel(SphereCoord, obj, 'start')
                         }
-                    } else {
-                        mesh.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
-                        mesh.color = mesh.material.color.clone();//自定义颜色属性 用于射线拾取交互
-                        // this.addLabel(SphereCoord, obj, 'start')
                     }
-
                 });
             })
         },
@@ -1000,8 +1000,9 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     // 经纬度转球面坐标
                     var coord = this.lon2xyz(R, elem[0], elem[1])
                     // console.log(coord)
-                    if(!isNaN(coord.x)){
-                    pointArr.push(coord.x, coord.y, coord.z);}
+                    if (!isNaN(coord.x)) {
+                        pointArr.push(coord.x, coord.y, coord.z);
+                    }
                 });
                 group.add(this.line(pointArr));
             });
@@ -1479,10 +1480,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.scene = null;
             this.camera = null;
             this.controls = null;
-            this.id=null;
+            this.id = null;
             cancelAnimationFrame(this.animationId)
             this.animationId = null;
-            console.log('怎么回事啊',this.id,this.animationId)
+            console.log('怎么回事啊', this.id, this.animationId)
             removeEventListener('mousemove', this.choosePointMesh)
             removeEventListener('click', this.clickPointMesh)
         }
