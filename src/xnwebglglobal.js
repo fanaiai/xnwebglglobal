@@ -38,9 +38,18 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             }
         },
         tooltip: {
-            "content": "<p><span class=\"bi-tooltip-field\" data-key=\"国家名称\" contenteditable=\"false\">国家名称</span>&nbsp;到&nbsp;<span class=\"bi-tooltip-field\" data-key=\"toname\" contenteditable=\"false\">toname</span>&nbsp;<span class=\"bi-tooltip-field\" data-key=\"值$$_count\" contenteditable=\"false\">值$$_count</span>元</p>",
-            "backgroundColor": "rgba(0,0,0,.8)",
-            "color": "#fff"
+            "show": true,
+            "content": "",
+            "backgroundColor": "rgba(8,85,139,.8)",
+            "backgroundImage": "",
+            "backgroundSize": "",
+            "borderColor": "#00B4FF",
+            "color": "#fff",
+            "borderRadius": 4,
+            "borderWidth": 1,
+            "fontSize": 12,
+            "borderStyle": "solid",
+            "padding": 4,
         },
         "label": {
             "start": {
@@ -182,9 +191,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
 
         this['add' + this.option.type]()
         this.eventList = {}
-
-        this.tooltip = this.addtooltip();
-        this.scene.add(this.tooltip);
+        if (this.option.tooltip.show) {
+            this.tooltip = this.addtooltip();
+            this.scene.add(this.tooltip);
+        }
         this.addEvent();
     }
 
@@ -260,9 +270,8 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             return html.innerHTML;
         },
         _setLabelStyle(div, css) {
-
             div.style.backgroundColor = css.backgroundColor;
-            div.style.backgroundImage = 'url('+css.backgroundImage+')';
+            div.style.backgroundImage = 'url(' + css.backgroundImage + ')';
             div.style.backgroundSize = css.backgroundSize;
             div.style.fontSize = css.fontSize;
             div.style.lineHeight = css.lineHeight;
@@ -425,14 +434,14 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             if (attr.type['circleLight'].show) {
                 circleLight = this.createPointBaseMesh(attr, this.option.R, SphereCoord1, basetexture);//光柱底座矩形平面
                 hotDataMesh.add(circleLight);
-                this.calcMeshArry.push(circleLight)
+                !isFly && (this.calcMeshArry.push(circleLight))
                 circleLight.origindata = origindata;
             }
             var height = 5 + this.option.R * 0.3 * value / maxNum;// 热度越高，光柱高度越高
             if (attr.type['lightBar'].show) {
                 lightBar = this.createLightPillar(attr, this.option.R, SphereCoord, height, lightbartexture);//光柱
                 hotDataMesh.add(lightBar);
-                this.calcMeshArry.push(lightBar)
+                !isFly && (this.calcMeshArry.push(lightBar))
                 lightBar.origindata = origindata;
             }
 
@@ -440,21 +449,24 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 wave = this.createWaveMesh(attr, this.option.R, SphereCoord1, wavetexture);//波动光圈
                 hotDataMesh.add(wave);
                 this.WaveMeshArr.push(wave);
-                this.calcMeshArry.push(wave)
+                !isFly && (this.calcMeshArry.push(wave))
+                // this.calcMeshArry.push(wave)
                 wave.origindata = origindata;
             }
 
             if (attr.type['bar'].show) {
                 bar = this.createPrism(this.option.R, SphereCoord, height, attr)
                 hotDataMesh.add(bar)
-                this.calcMeshArry.push(bar)
+                !isFly && (this.calcMeshArry.push(bar))
+                // this.calcMeshArry.push(bar)
                 bar.origindata = origindata;
             }
             if (attr.type['cone'].show && !isFly) {
                 ConeMesh = this.createConeMesh(this.option.R * value * attr.type['cone'].height / (maxNum), SphereCoord);//棱锥
                 hotDataMesh.add(ConeMesh);
                 this.ConeMeshArry.push(ConeMesh)
-                this.calcMeshArry.push(ConeMesh)
+                !isFly && (this.calcMeshArry.push(ConeMesh))
+                // this.calcMeshArry.push(ConeMesh)
                 ConeMesh.origindata = origindata;
             }
             if (!isFly) {
@@ -1102,6 +1114,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 var material = new THREE.MeshLambertMaterial({
                     map: globalimg,
                     transparent: true,
+                    color:this.option.baseGlobal.color,
                 })
             } else {
                 var material = new THREE.MeshLambertMaterial({
@@ -1344,13 +1357,14 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             var div = document.createElement('div');
             div.classList.add('xnwebglobal-tooltip')
             div.style.visibility = 'hidden';
-            div.innerHTML = 'GDP';
-            div.style.padding = '4px 10px';
-            div.style.color = this.option.tooltip.color;
-            div.style.fontSize = '14px';
-            div.style.position = 'absolute';
-            div.style.backgroundColor = this.option.tooltip.backgroundColor;
-            div.style.borderRadius = '2px';
+            div.innerHTML = '';
+            // div.style.padding = '4px 10px';
+            // div.style.color = this.option.tooltip.color;
+            // div.style.fontSize = '14px';
+            // div.style.position = 'absolute';
+            // div.style.backgroundColor = this.option.tooltip.backgroundColor;
+            // div.style.borderRadius = '2px';
+            this._setLabelStyle(div, this.option.tooltip);
             //div元素包装为CSS2模型对象CSS2DObject
             var label = new CSS2DObject(div);
             div.style.pointerEvents = 'none';//避免HTML标签遮挡三维场景的鼠标事件
@@ -1399,10 +1413,11 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                         if (this.chooseMesh.meshType == 'flyline' && this.chooseMesh.origindata) {
                             var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
                             this.tooltip.element.innerHTML = content;
+
                         }
-                        if (this.chooseMesh.meshType != 'area' && this.chooseMesh.meshType != 'fly') {
-                            this.tooltip.element.innerHTML = '';
-                        }
+                        // if (this.chooseMesh.meshType != 'area' && this.chooseMesh.meshType != 'fly') {
+                        //     this.tooltip.element.innerHTML = '';
+                        // }
 
                     } else {
                         this.chooseMesh = null;
@@ -1425,10 +1440,12 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             var that = this;
             var html = document.createElement('div')
             html.innerHTML = content;
-            html.querySelectorAll(".bi-tooltip-field").forEach(function (el) {
+            html.querySelectorAll(".bi-label-field").forEach(function (el) {
                 var field = el.getAttribute("data-key");
-                while (el.childNodes.length > 1) {
-                    el = el.childNodes[1]
+                if (el && el.children) {
+                    while (el && el.children.length >= 1) {
+                        el = el.children[0]
+                    }
                 }
                 if (v[field] != undefined) {
                     el.innerHTML = (v[field]);
