@@ -35,7 +35,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             texture: {
                 show: false,
                 img: ''
-            }
+            },
+            "areaOpacity":1,
+            "areaLineOpacity":1,
+            "gridOpacity":1
         },
         tooltip: {
             "show": true,
@@ -984,6 +987,8 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 // MeshLambertMaterial   MeshBasicMaterial
                 var material = new THREE.MeshLambertMaterial({
                     color: 0x002222,
+                    transparent:true,
+                    opacity:this.option.baseGlobal.areaOpacity,
                     // side: THREE.BackSide, //背面可见，默认正面可见   THREE.DoubleSide：双面可见
                 })
                 var mesh = new THREE.Mesh(newGeometry, material)
@@ -999,6 +1004,8 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     color: this.option.baseGlobal.gridColor,
                     // vertexColors: THREE.VertexColors, //使用顶点颜色数据渲染
                     size: this.option.baseGlobal.gridSize || 3,
+                    transparent:true,
+                    opacity:this.option.baseGlobal.gridOpacity,
                 });
                 var mesh = new THREE.Points(newPointGeometry, pointMaterial);
             }
@@ -1035,7 +1042,9 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             geometry.attributes.position = attribue;
             // 线条渲染几何体顶点数据
             var material = new THREE.LineBasicMaterial({
-                color: this.option.baseGlobal.areaLine //线条颜色
+                color: this.option.baseGlobal.areaLine, //线条颜色
+                transparent:true,
+                opacity:this.option.baseGlobal.areaLineOpacity,
             });//材质对象
             // var line = new THREE.Line(geometry, material);//线条模型对象
             var line = new THREE.LineLoop(geometry, material);//首尾顶点连线，轮廓闭合
