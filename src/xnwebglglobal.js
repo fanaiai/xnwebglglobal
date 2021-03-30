@@ -1127,6 +1127,20 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             }
             var mesh = new THREE.Mesh(geo, material);
             this.earth.add(mesh)
+            // this.addCloud();
+        },
+        addCloud(){
+            var geo = new THREE.SphereBufferGeometry(this.option.R*1.1, 40, 40)
+            var textureLoader = new THREE.TextureLoader(); // TextureLoader创建一个纹理加载器对象
+            var globalimg = textureLoader.load("/static/2.png");
+            // var globalimg = textureLoader.load(staticpath + '/static/earth.jpg');
+            var material = new THREE.MeshLambertMaterial({
+                map: globalimg,
+                transparent: true,
+                color:this.option.baseGlobal.color,
+            })
+            var mesh = new THREE.Mesh(geo, material);
+            this.earth.add(mesh)
         },
         initThree() {
             var scene = new THREE.Scene();
