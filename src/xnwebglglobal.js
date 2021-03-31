@@ -1123,7 +1123,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 var material = new THREE.MeshLambertMaterial({
                     map: globalimg,
                     transparent: true,
-                    color:this.option.baseGlobal.color,
+                    // color:this.option.baseGlobal.color,
                 })
             } else {
                 var material = new THREE.MeshLambertMaterial({
