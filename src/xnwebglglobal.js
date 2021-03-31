@@ -1423,7 +1423,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     // console.log("射线投射器返回的对象 点point", intersects[0].point);
                     // console.log("射线投射器的对象 几何体",intersects[0].object.geometry.vertices)
                     // intersects.length大于0说明，说明选中了模型
-                    if (intersects.length > 0) {
+                    if (intersects.length > 0 && this.option.tooltip.show) {
                         this.chooseMesh = intersects[0].object;
                         this.tooltip.position.copy(intersects[0].point);
                         // console.log(intersects[0].point)
