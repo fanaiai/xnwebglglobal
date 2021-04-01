@@ -1437,6 +1437,12 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                             var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
                             this.tooltip.element.innerHTML = content;
 
+
+
+
+
+
+
                         }
                         // if (this.chooseMesh.meshType != 'area' && this.chooseMesh.meshType != 'fly') {
                         //     this.tooltip.element.innerHTML = '';
