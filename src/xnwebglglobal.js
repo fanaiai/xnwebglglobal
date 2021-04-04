@@ -380,7 +380,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     var tlonlat = obj[this.option.toLonlat].split(',');//经度
                     var tlon = tlonlat[0]
                     var tlat = tlonlat[1]//纬度
-
+                    if(lon!=tlon || lat!=tlat){
                     var flyLine = this.flyArc(lon, lat, tlon, tlat)
                     hotDataMesh.add(flyLine); //飞线插入flyArcGroup中
                     this.calcMeshArry.push(flyLine);
@@ -388,6 +388,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     this.flyArr.push(flyLine.flyLine);//获取飞线段
                     flyLine.meshType = 'flyline'
                     flyLine.origindata = obj;
+                    }
                     obj.$$_endData = endData[obj[this.option.toCountryName]];
                     obj.$$_startData = startData[obj[this.option.countryName]];
                     var endValue=obj.$$_endData.value;
@@ -466,7 +467,12 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 !isFly && (this.calcMeshArry.push(circleLight))
                 circleLight.origindata = origindata;
             }
+            if((maxNum-minNum)==0){
+                var height = 5
+            }
+            else{
             var height = 5 + this.option.R  * (value-minNum) / (maxNum-minNum);// 热度越高，光柱高度越高
+                }
             if (attr.type['lightBar'].show) {
                 height=height*parseFloat(this.option.attr[this.option.type].type.lightBar.ratio);
                 lightBar = this.createLightPillar(attr, this.option.R, SphereCoord, height, lightbartexture);//光柱
