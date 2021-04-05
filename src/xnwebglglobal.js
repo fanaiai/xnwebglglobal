@@ -295,8 +295,14 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 var quaternion = new THREE.Quaternion();
                 var quaternion1 = new THREE.Quaternion();
                 quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.rotate);
-                var rotateY = this.controls.getAzimuthalAngle() > 0 ? (Math.PI * 2 - this.controls.getAzimuthalAngle()) : this.controls.getAzimuthalAngle()
-                quaternion1.setFromEuler(new THREE.Euler(-this.controls.getPolarAngle() + Math.PI / 2, rotateY, 0, 'XYZ'))
+                // console.log(this.camera.rotation)
+                // console.log(this.controls.getAzimuthalAngle())
+                // var rotateY = this.controls.getAzimuthalAngle() > 0 ? (Math.PI * 2 - this.controls.getAzimuthalAngle()) : this.controls.getAzimuthalAngle()
+                // quaternion1.setFromEuler(new THREE.Euler(-this.controls.getPolarAngle() + Math.PI / 2, rotateY, 0, 'XYZ'))
+                // console.log(-this.controls.getPolarAngle() + Math.PI / 2)
+                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._x, -this.camera.rotation._y, 0, 'XYZ'))
+
+
                 var worldVector = new THREE.Vector3(
                     position.x,
                     position.y,
@@ -1091,6 +1097,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             var [min, max] = this.getMaxMin(data, this.option.valueName);
             var maxNum = max[this.option.valueName];
             var minNum = min[this.option.valueName];
+            console.log(data)
             data.forEach(obj => {
                 var name = obj[this.option.countryName];
                 var value = obj[this.option.valueName];
