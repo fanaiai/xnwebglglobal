@@ -1291,6 +1291,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             this.controls = new OrbitControls(this.camera, this.renderer.domElement);
             // controls.target.set(103, 45, 0);
             this.controls.update();
+            // this.controls.addEventListener('change',()=>{
+            //     console.log(this.camera.rotation._y,this.camera.rotation._x)
+            //     this.updataLabelPos();
+            // })
         },
         lon2xyz(R, longitude, latitude) {
             // return {
