@@ -41,7 +41,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
             "gridOpacity":1
         },
         tooltip: {
-            "show": true,
+            "show": false,
             "content": "",
             "backgroundColor": "rgba(8,85,139,.8)",
             "backgroundImage": "",
@@ -297,10 +297,10 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), this.rotate);
                 // console.log(this.camera.rotation)
                 // console.log(this.controls.getAzimuthalAngle())
-                // var rotateY = this.controls.getAzimuthalAngle() > 0 ? (Math.PI * 2 - this.controls.getAzimuthalAngle()) : this.controls.getAzimuthalAngle()
+                var rotateY = this.camera.rotation._y > 0 ? (Math.PI * 2 - this.camera.rotation._y) : this.camera.rotation._y
                 // quaternion1.setFromEuler(new THREE.Euler(-this.controls.getPolarAngle() + Math.PI / 2, rotateY, 0, 'XYZ'))
                 // console.log(-this.controls.getPolarAngle() + Math.PI / 2)
-                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._x, -this.camera.rotation._y, 0, 'XYZ'))
+                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._x, rotateY, 0, 'XYZ'))
 
 
                 var worldVector = new THREE.Vector3(
@@ -1476,6 +1476,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     // console.log("射线器返回的对象", intersects);
                     // console.log("射线投射器返回的对象 点point", intersects[0].point);
                     // console.log("射线投射器的对象 几何体",intersects[0].object.geometry.vertices)
+
                     // intersects.length大于0说明，说明选中了模型
                     if (intersects.length > 0 && this.option.tooltip.show) {
                         this.chooseMesh = intersects[0].object;
@@ -1513,6 +1514,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     // this.chooseMesh.material.color.set('#ffaa00')
                 }
             }
+
             addEventListener('mousemove', choosePointMesh)
             addEventListener('click', clickPointMesh)
             this.choosePointMesh = choosePointMesh;
