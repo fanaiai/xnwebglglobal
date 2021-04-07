@@ -300,7 +300,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 var rotateY = this.camera.rotation._y > 0 ? (Math.PI * 2 - this.camera.rotation._y) : this.camera.rotation._y
                 // quaternion1.setFromEuler(new THREE.Euler(-this.controls.getPolarAngle() + Math.PI / 2, rotateY, 0, 'XYZ'))
                 // console.log(-this.controls.getPolarAngle() + Math.PI / 2)
-                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._x, rotateY, 0, 'XYZ'))
+                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._z, - this.camera.rotation._y,- this.camera.rotation._x, 'ZYX'))
 
 
                 var worldVector = new THREE.Vector3(
@@ -313,13 +313,15 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                     position.y,
                     position.z
                 );
-                worldVector1.applyQuaternion(quaternion).applyQuaternion(quaternion1)
+                worldVector1.applyQuaternion(quaternion1).applyQuaternion(quaternion)
                 worldVector.applyQuaternion(quaternion);
                 if (worldVector1.z < 0) {
                     div.style.display = 'none'
                 } else {
                     div.style.display = 'block'
                 }
+                // console.log(this.camera.rotation)
+                // div.innerHTML = `<p>${worldVector1.z}</p><p>${position.z}</p>`
                 var standardVector = worldVector.project(this.camera);//世界坐标转标准设备坐标
                 var a = this.option.width / 2;
                 var b = this.option.height / 2;
@@ -330,7 +332,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                  */
                 div.style.left = x + 20 + 'px';
                 div.style.top = y - 20 + 'px';
-                // div.innerHTML = standardVector.z
+
             })
         },
         _addEarthItem(attr, isFly) {
