@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "仙女座三维地球可视化",
   "dependencies": {
+    "@sunify/lerp-color": "^2.0.0",
     "delaunator": "^4.0.1",
     "point-in-polygon": "^1.0.1"
   },

@@ -12,6 +12,7 @@ import {OrbitControls} from './three/OrbitControls.js';
 import Delaunator from 'delaunator';
 import {BufferGeometryUtils} from './three/BufferGeometryUtils.js';
 import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
+import lerp from '@sunify/lerp-color'
 
 (function (window, $) {
     // var that;
@@ -1094,12 +1095,9 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
         },
         calcAreaCountryColor(data) {
             var json = {};
-            var color1 = new THREE.Color(this.option.attr.area.colors[0]);
-            var color2 = new THREE.Color(this.option.attr.area.colors[1]);
             var [min, max] = this.getMaxMin(data, this.option.valueName);
             var maxNum = max[this.option.valueName];
             var minNum = min[this.option.valueName];
-            console.log(data)
             data.forEach(obj => {
                 var name = obj[this.option.countryName];
                 var value = obj[this.option.valueName];
@@ -1110,7 +1108,7 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                 if (!value) {
                     value = 0;
                 }
-                color = color1.clone().lerp(color2.clone(), Math.sqrt((value-minNum) / maxNum));
+                color=new THREE.Color(lerp(this.option.attr.area.colors, Math.sqrt((value-minNum) / (maxNum-minNum))));
                 json[name] = {
                     color: color,
                     origindata: obj
@@ -1493,17 +1491,14 @@ import {CSS2DRenderer, CSS2DObject} from './three/CSS2DRenderer.js';
                         if (this.chooseMesh.meshType == 'area') {
                             // console.log(this.chooseMesh)
                             this.chooseMesh.material.color.set(this.option.baseGlobal.hoverColor)
+                            if(this.option.type=='area' && this.chooseMesh.origindata){
+                                var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
+                                this.tooltip.element.innerHTML = content;
+                            }
                         }
                         if (this.chooseMesh.meshType == 'flyline' && this.chooseMesh.origindata) {
                             var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
                             this.tooltip.element.innerHTML = content;
-
-
-
-
-
-
-
                         }
                         // if (this.chooseMesh.meshType != 'area' && this.chooseMesh.meshType != 'fly') {
                         //     this.tooltip.element.innerHTML = '';
