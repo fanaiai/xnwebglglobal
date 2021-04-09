@@ -248,7 +248,9 @@ import lerp from '@sunify/lerp-color'
             this.dom.appendChild(div)
             this.labelArry.push({
                 dom: div,
-                position: position
+                position: position,
+                x:x,
+                y:y
             })
         },
         calcTextLabel: function (content, v) {
@@ -286,7 +288,7 @@ import lerp from '@sunify/lerp-color'
             div.style.borderColor = css.borderColor;
             div.style.padding = css.padding;
         },
-        updataLabelPos() {
+        updateLabelPos() {
             // if (!this.option.label.show) {
             //     return;
             // }
@@ -318,8 +320,10 @@ import lerp from '@sunify/lerp-color'
                 worldVector.applyQuaternion(quaternion);
                 if (worldVector1.z < 0) {
                     div.style.display = 'none'
+                    ele.show=false;
                 } else {
                     div.style.display = 'block'
+                    ele.show=true;
                 }
                 // console.log(this.camera.rotation)
                 // div.innerHTML = `<p>${worldVector1.z}</p><p>${position.z}</p>`
@@ -331,10 +335,99 @@ import lerp from '@sunify/lerp-color'
                 /**
                  * 更新立方体元素位置
                  */
-                div.style.left = x + 20 + 'px';
-                div.style.top = y - 20 + 'px';
+                // div.style.left = x + 20 + 'px';
+                // div.style.top = y - 20 + 'px';
+                ele.x=x;
+                ele.y=y;
+                this.getRect(ele);
 
             })
+            for(let i=0;i<this.labelArry.length;i++){
+                let temp=this.labelArry[i];
+                let div=temp.dom;
+                temp.index=0;
+                temp.show=!this._literalCheckMeet(i,temp)
+                if(temp.show){
+                    div.style.left = temp.rect[temp.index].minX + 'px';
+                    div.style.top = temp.rect[temp.index].minY + 'px';
+                }
+                else{
+                    div.style.display = 'none'
+                }
+            }
+        },
+        _literalCheckMeet(i,temp){
+            for(let j=0;j<i;j++){
+                if(i!=j && this.labelArry[j].show && temp.show && this.isAnchorMeet(this.labelArry[j].rect[this.labelArry[j].index],temp.rect[temp.index])){
+                    temp.index++;
+                    if(temp.index>3){
+                        return true;
+                    }
+                    return this._literalCheckMeet(i,temp);
+                }
+            }
+            return false;
+        },
+        getRect(ele){
+            let offsetX=10;
+            let offsetY=10;
+            let width=ele.dom.offsetWidth;
+            let height=ele.dom.offsetHeight;
+            ele.rect=[
+                this._getLeftRect(ele,offsetX,offsetY,width,height),
+                this._getRightRect(ele,offsetX,offsetY,width,height),
+                this._getTopRect(ele,offsetX,offsetY,width,height),
+                this._getBottomRect(ele,offsetX,offsetY,width,height),
+            ]
+        },
+        _getRightRect(ele,offsetX,offsetY,width,height){
+            return {
+                maxX:ele.x+offsetX+width,
+                maxY: ele.y+height/2,
+                minX: ele.x+offsetX,
+                minY: ele.y-height/2,
+                width: width,
+                height: height,
+            }
+        },
+        _getLeftRect(ele,offsetX,offsetY,width,height){
+            return {
+                maxX:ele.x-offsetX,
+                maxY: ele.y+height/2,
+                minX: ele.x-offsetX-width,
+                minY: ele.y-height/2,
+                width: width,
+                height: height,
+            }
+        },
+        _getTopRect(ele,offsetX,offsetY,width,height){
+            return {
+                maxX:ele.x+width/2,
+                maxY: ele.y-offsetY,
+                minX: ele.x-width/2,
+                minY: ele.y-offsetY-height,
+                width: width,
+                height: height,
+            }
+        },
+        _getBottomRect(ele,offsetX,offsetY,width,height){
+            return {
+                maxX:ele.x+width/2,
+                minX: ele.x-width/2,
+                minY: ele.y+offsetY,
+                maxY: ele.y+offsetY+height,
+                width: width,
+                height: height,
+            }
+        },
+        isAnchorMeet(t1,t2) {
+            let react = t1,
+                targetReact = t2;
+            if ((react.minX < targetReact.maxX) && (targetReact.minX < react.maxX) &&
+                (react.minY < targetReact.maxY) && (targetReact.minY < react.maxY)) {
+                return true;
+            }
+            return false;
         },
         _addEarthItem(attr, isFly) {
             var textureLoader = new THREE.TextureLoader(); // TextureLoader创建一个纹理加载器对象
@@ -1282,7 +1375,7 @@ import lerp from '@sunify/lerp-color'
                 // this.earth.rotateY(this.option.animate.rotateStep);//有叠加，在反复，奇怪了
                 this.earth.rotation.y = this.rotate;
             }
-            this.updataLabelPos();
+            this.updateLabelPos();
             this.labelRenderer.render(this.scene, this.camera)
             this.renderer.render(this.scene, this.camera);
             this.animationId = requestAnimationFrame(this.render.bind(this))
@@ -1293,7 +1386,7 @@ import lerp from '@sunify/lerp-color'
             this.controls.update();
             // this.controls.addEventListener('change',()=>{
             //     console.log(this.camera.rotation._y,this.camera.rotation._x)
-            //     this.updataLabelPos();
+            //     this.updateLabelPos();
             // })
         },
         lon2xyz(R, longitude, latitude) {

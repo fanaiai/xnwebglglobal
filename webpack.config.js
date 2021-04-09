@@ -17,7 +17,7 @@ module.exports = (env) => {
         devtool: env.production ? 'source-map' : 'eval-source-map',//追踪错误源码
         devServer: {
             contentBase: './dist',
-            port:8083
+            port:8084
         },
         plugins: [
             new CleanWebpackPlugin({cleanStaleWebpackAssets: true}),
