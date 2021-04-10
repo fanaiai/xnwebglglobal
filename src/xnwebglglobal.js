@@ -37,9 +37,9 @@ import lerp from '@sunify/lerp-color'
                 show: false,
                 img: ''
             },
-            "areaOpacity":1,
-            "areaLineOpacity":1,
-            "gridOpacity":1
+            "areaOpacity": 1,
+            "areaLineOpacity": 1,
+            "gridOpacity": 1
         },
         tooltip: {
             "show": false,
@@ -56,6 +56,7 @@ import lerp from '@sunify/lerp-color'
             "padding": 4,
         },
         "label": {
+            "wordAvoidance": true,
             "start": {
                 "backgroundColor": "rgba(8,85,139,.8)",
                 "backgroundImage": "",
@@ -98,11 +99,11 @@ import lerp from '@sunify/lerp-color'
                 type: {
                     'circleLight': {
                         show: true,
-                        width: .12,ratio:1
+                        width: .12, ratio: 1
                     },
                     'lightBar': {
                         show: true,
-                        width: .12,ratio:1
+                        width: .12, ratio: 1
                     },
                     'bar': {
                         show: false,
@@ -127,11 +128,11 @@ import lerp from '@sunify/lerp-color'
                 type: {
                     'circleLight': {
                         show: true,
-                        width: .12,ratio:1
+                        width: .12, ratio: 1
                     },
                     'lightBar': {
                         show: true,
-                        width: .12,ratio:1
+                        width: .12, ratio: 1
                     },
                     'bar': {
                         show: false,
@@ -249,8 +250,8 @@ import lerp from '@sunify/lerp-color'
             this.labelArry.push({
                 dom: div,
                 position: position,
-                x:x,
-                y:y
+                x: x,
+                y: y
             })
         },
         calcTextLabel: function (content, v) {
@@ -303,7 +304,7 @@ import lerp from '@sunify/lerp-color'
                 var rotateY = this.camera.rotation._y > 0 ? (Math.PI * 2 - this.camera.rotation._y) : this.camera.rotation._y
                 // quaternion1.setFromEuler(new THREE.Euler(-this.controls.getPolarAngle() + Math.PI / 2, rotateY, 0, 'XYZ'))
                 // console.log(-this.controls.getPolarAngle() + Math.PI / 2)
-                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._z, - this.camera.rotation._y,- this.camera.rotation._x, 'ZYX'))
+                quaternion1.setFromEuler(new THREE.Euler(-this.camera.rotation._z, -this.camera.rotation._y, -this.camera.rotation._x, 'ZYX'))
 
 
                 var worldVector = new THREE.Vector3(
@@ -320,10 +321,17 @@ import lerp from '@sunify/lerp-color'
                 worldVector.applyQuaternion(quaternion);
                 if (worldVector1.z < 0) {
                     div.style.display = 'none'
-                    ele.show=false;
+                    ele.show = false;
+                    ele.z = worldVector1.z;
                 } else {
                     div.style.display = 'block'
-                    ele.show=true;
+                    ele.show = true;
+                    if (ele.z < 0) {
+                        ele.needCalcMeet = true;
+                    } else {
+                        ele.needCalcMeet = false;
+                    }
+                    ele.z = worldVector1.z;
                 }
                 // console.log(this.camera.rotation)
                 // div.innerHTML = `<p>${worldVector1.z}</p><p>${position.z}</p>`
@@ -335,92 +343,112 @@ import lerp from '@sunify/lerp-color'
                 /**
                  * 更新立方体元素位置
                  */
-                // div.style.left = x + 20 + 'px';
-                // div.style.top = y - 20 + 'px';
-                ele.x=x;
-                ele.y=y;
-                this.getRect(ele);
+
+                ele.x = x;
+                ele.y = y;
+                if (this.option.label.wordAvoidance) {
+                    this.getRect(ele);
+                } else {
+                    div.style.left = x + 20 + 'px';
+                    div.style.top = y - 20 + 'px';
+                }
 
             })
-            for(let i=0;i<this.labelArry.length;i++){
-                let temp=this.labelArry[i];
-                let div=temp.dom;
-                temp.index=0;
-                temp.show=!this._literalCheckMeet(i,temp)
-                if(temp.show){
+            if (this.option.label.wordAvoidance) {
+            for (let i = 0; i < this.labelArry.length; i++) {
+                let temp = this.labelArry[i];
+                let div = temp.dom;
+                if (temp.needCalcMeet || temp.index == undefined) {
+                    temp.index = 0;
+                    temp.show = !this._literalCheckMeet(i, temp)
+                } else {
+                    let show = !this._checkFixedMeet(i, temp, temp.index)
+                    if (!show) {
+                        temp.show = false;
+                    }
+                }
+                if (temp.show && temp.rect[temp.index]) {
                     div.style.left = temp.rect[temp.index].minX + 'px';
                     div.style.top = temp.rect[temp.index].minY + 'px';
-                }
-                else{
+                } else {
                     div.style.display = 'none'
                 }
-            }
+            }}
         },
-        _literalCheckMeet(i,temp){
-            for(let j=0;j<i;j++){
-                if(i!=j && this.labelArry[j].show && temp.show && this.isAnchorMeet(this.labelArry[j].rect[this.labelArry[j].index],temp.rect[temp.index])){
-                    temp.index++;
-                    if(temp.index>3){
-                        return true;
-                    }
-                    return this._literalCheckMeet(i,temp);
+        _checkFixedMeet(i, temp, index) {
+            for (let j = 0; j < i; j++) {
+                if (i != j && this.labelArry[j].show && this.isAnchorMeet(this.labelArry[j].rect[this.labelArry[j].index || 0], temp.rect[index])) {
+                    return true;
                 }
             }
             return false;
         },
-        getRect(ele){
-            let offsetX=10;
-            let offsetY=10;
-            let width=ele.dom.offsetWidth;
-            let height=ele.dom.offsetHeight;
-            ele.rect=[
-                this._getLeftRect(ele,offsetX,offsetY,width,height),
-                this._getRightRect(ele,offsetX,offsetY,width,height),
-                this._getTopRect(ele,offsetX,offsetY,width,height),
-                this._getBottomRect(ele,offsetX,offsetY,width,height),
+        _literalCheckMeet(i, temp) {
+            for (let j = 0; j < i; j++) {
+                if (i != j && this.labelArry[j].show && this.isAnchorMeet(this.labelArry[j].rect[this.labelArry[j].index || 0], temp.rect[temp.index || 0])) {
+                    temp.index++;
+                    if (temp.index > 3) {
+                        temp.index = 3;
+                        return true;
+                    }
+                    return this._literalCheckMeet(i, temp);
+                }
+            }
+            return false;
+        },
+        getRect(ele) {
+            let offsetX = 10;
+            let offsetY = 10;
+            let width = ele.dom.offsetWidth;
+            let height = ele.dom.offsetHeight;
+            ele.rect = [
+                this._getLeftRect(ele, offsetX, offsetY, width, height),
+                this._getRightRect(ele, offsetX, offsetY, width, height),
+                this._getTopRect(ele, offsetX, offsetY, width, height),
+                this._getBottomRect(ele, offsetX, offsetY, width, height),
             ]
         },
-        _getRightRect(ele,offsetX,offsetY,width,height){
+        _getRightRect(ele, offsetX, offsetY, width, height) {
             return {
-                maxX:ele.x+offsetX+width,
-                maxY: ele.y+height/2,
-                minX: ele.x+offsetX,
-                minY: ele.y-height/2,
+                maxX: ele.x + offsetX + width,
+                maxY: ele.y + height / 2,
+                minX: ele.x + offsetX,
+                minY: ele.y - height / 2,
                 width: width,
                 height: height,
             }
         },
-        _getLeftRect(ele,offsetX,offsetY,width,height){
+        _getLeftRect(ele, offsetX, offsetY, width, height) {
             return {
-                maxX:ele.x-offsetX,
-                maxY: ele.y+height/2,
-                minX: ele.x-offsetX-width,
-                minY: ele.y-height/2,
+                maxX: ele.x - offsetX,
+                maxY: ele.y + height / 2,
+                minX: ele.x - offsetX - width,
+                minY: ele.y - height / 2,
                 width: width,
                 height: height,
             }
         },
-        _getTopRect(ele,offsetX,offsetY,width,height){
+        _getTopRect(ele, offsetX, offsetY, width, height) {
             return {
-                maxX:ele.x+width/2,
-                maxY: ele.y-offsetY,
-                minX: ele.x-width/2,
-                minY: ele.y-offsetY-height,
+                maxX: ele.x + width / 2,
+                maxY: ele.y - offsetY,
+                minX: ele.x - width / 2,
+                minY: ele.y - offsetY - height,
                 width: width,
                 height: height,
             }
         },
-        _getBottomRect(ele,offsetX,offsetY,width,height){
+        _getBottomRect(ele, offsetX, offsetY, width, height) {
             return {
-                maxX:ele.x+width/2,
-                minX: ele.x-width/2,
-                minY: ele.y+offsetY,
-                maxY: ele.y+offsetY+height,
+                maxX: ele.x + width / 2,
+                minX: ele.x - width / 2,
+                minY: ele.y + offsetY,
+                maxY: ele.y + offsetY + height,
                 width: width,
                 height: height,
             }
         },
-        isAnchorMeet(t1,t2) {
+        isAnchorMeet(t1, t2) {
             let react = t1,
                 targetReact = t2;
             if ((react.minX < targetReact.maxX) && (targetReact.minX < react.maxX) &&
@@ -444,17 +472,17 @@ import lerp from '@sunify/lerp-color'
             var minNum = min[this.option.valueName];
             if (!isFly) {
                 this.option.data.forEach((obj, i) => {
-                    var value=obj[this.option.valueName];
-                    if(this.isLog){
-                        value=Math.log(value);
+                    var value = obj[this.option.valueName];
+                    if (this.isLog) {
+                        value = Math.log(value);
                     }
-                    if(!obj[this.option.lonlat]){
+                    if (!obj[this.option.lonlat]) {
                         return;
                     }
                     var lonlat = obj[this.option.lonlat].split(',');//经度
                     var lon = lonlat[0]
                     var lat = lonlat[1]//纬度
-                    this.addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, obj, isFly,this.isLog)
+                    this.addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, obj, isFly, this.isLog)
                 })
             }
             if (isFly) {//飞线时需要重新计算起点和终点的值
@@ -473,8 +501,8 @@ import lerp from '@sunify/lerp-color'
                     }
                     startData[startName].value += obj[this.option.valueName];
                 })
-                var [endMin, endMax,endisLog] = this.getMaxMinFromJSON(endData);
-                var [startMin, startMax,startisLog] = this.getMaxMinFromJSON(startData);
+                var [endMin, endMax, endisLog] = this.getMaxMinFromJSON(endData);
+                var [startMin, startMax, startisLog] = this.getMaxMinFromJSON(startData);
                 this.option.data.forEach((obj, i) => {
                     var lonlat = obj[this.option.lonlat].split(',');//经度
                     var lon = lonlat[0]
@@ -482,20 +510,20 @@ import lerp from '@sunify/lerp-color'
                     var tlonlat = obj[this.option.toLonlat].split(',');//经度
                     var tlon = tlonlat[0]
                     var tlat = tlonlat[1]//纬度
-                    if(lon!=tlon || lat!=tlat){
-                    var flyLine = this.flyArc(lon, lat, tlon, tlat)
-                    hotDataMesh.add(flyLine); //飞线插入flyArcGroup中
-                    this.calcMeshArry.push(flyLine);
+                    if (lon != tlon || lat != tlat) {
+                        var flyLine = this.flyArc(lon, lat, tlon, tlat)
+                        hotDataMesh.add(flyLine); //飞线插入flyArcGroup中
+                        this.calcMeshArry.push(flyLine);
 
-                    this.flyArr.push(flyLine.flyLine);//获取飞线段
-                    flyLine.meshType = 'flyline'
-                    flyLine.origindata = obj;
+                        this.flyArr.push(flyLine.flyLine);//获取飞线段
+                        flyLine.meshType = 'flyline'
+                        flyLine.origindata = obj;
                     }
                     obj.$$_endData = endData[obj[this.option.toCountryName]];
                     obj.$$_startData = startData[obj[this.option.countryName]];
-                    var endValue=obj.$$_endData.value;
-                    if(endisLog){
-                        endValue=Math.log(endValue);
+                    var endValue = obj.$$_endData.value;
+                    if (endisLog) {
+                        endValue = Math.log(endValue);
                     }
                     this.addBaseItem(hotDataMesh, attr, tlon, tlat, basetexture, lightbartexture, wavetexture, endValue, endMin, endMax, obj, isFly)
                     var SphereCoord = this.lon2xyz(this.option.R * 1.001, tlon, tlat);//SphereCoord球面坐标
@@ -503,9 +531,9 @@ import lerp from '@sunify/lerp-color'
                     if (obj.$$_startData && !obj.$$_startData.rendered) {//是起始点的时候画棱锥
                         if (!endData[obj[this.option.countryName]]) {
                             var SphereCoord = this.lon2xyz(this.option.R * 1.001, lon, lat);//SphereCoord球面坐标
-                            var startValue=obj.$$_startData.value;
-                            if(startisLog){
-                                startValue=Math.log(startValue);
+                            var startValue = obj.$$_startData.value;
+                            if (startisLog) {
+                                startValue = Math.log(startValue);
                             }
                             var color = this._calcColorSeg(startValue, startMin, startMax, attr.colors)
                             // var startheight = 5 + this.option.R  * (startValue-startMin) / (startMax-startMin);// 热度越高，光柱高度越高
@@ -545,13 +573,13 @@ import lerp from '@sunify/lerp-color'
                 }
             }
 
-            var isLog=false;
-            if(Math.log(max)/Math.log(min)>1){
-                min=Math.log(min);
-                max=Math.log(max);
-                isLog=true;
+            var isLog = false;
+            if (Math.log(max) / Math.log(min) > 1) {
+                min = Math.log(min);
+                max = Math.log(max);
+                isLog = true;
             }
-            return [min,max,isLog]
+            return [min, max, isLog]
             //
             //
             // if (Math.log10(max - min) > 2) {
@@ -559,27 +587,33 @@ import lerp from '@sunify/lerp-color'
             // }
             // return [min, max]
         },
-        addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, origindata, isFly,isLog) {
+        addBaseItem(hotDataMesh, attr, lon, lat, basetexture, lightbartexture, wavetexture, value, minNum, maxNum, origindata, isFly, isLog) {
             var circleLight, lightBar, wave, bar, ConeMesh
             var SphereCoord = this.lon2xyz(this.option.R, lon, lat);//SphereCoord球面坐标
             var SphereCoord1 = this.lon2xyz(this.option.R * 1.003, lon, lat);//SphereCoord球面坐标
             if (attr.type['circleLight'].show) {
                 circleLight = this.createPointBaseMesh(attr, this.option.R, SphereCoord1, basetexture);//光柱底座矩形平面
                 hotDataMesh.add(circleLight);
-                !isFly && (this.calcMeshArry.push(circleLight))
+                // (!isFly) && (this.calcMeshArry.push(circleLight))
+                // if(!isFly){
+                circleLight.meshType='point'
+                    this.calcMeshArry.push(circleLight)
+                // }
                 circleLight.origindata = origindata;
             }
-            if((maxNum-minNum)==0){
+            if ((maxNum - minNum) == 0) {
                 var height = 5
+            } else {
+                var height = 5 + this.option.R * (value - minNum) / (maxNum - minNum);// 热度越高，光柱高度越高
             }
-            else{
-            var height = 5 + this.option.R  * (value-minNum) / (maxNum-minNum);// 热度越高，光柱高度越高
-                }
             if (attr.type['lightBar'].show) {
-                height=height*parseFloat(this.option.attr[this.option.type].type.lightBar.ratio);
+                height = height * parseFloat(this.option.attr[this.option.type].type.lightBar.ratio);
                 lightBar = this.createLightPillar(attr, this.option.R, SphereCoord, height, lightbartexture);//光柱
+                lightBar.meshType='point'
                 hotDataMesh.add(lightBar);
-                !isFly && (this.calcMeshArry.push(lightBar))
+                // if(!isFly){
+                    this.calcMeshArry.push(lightBar)
+                // }
                 lightBar.origindata = origindata;
             }
 
@@ -587,25 +621,30 @@ import lerp from '@sunify/lerp-color'
                 wave = this.createWaveMesh(attr, this.option.R, SphereCoord1, wavetexture);//波动光圈
                 hotDataMesh.add(wave);
                 this.WaveMeshArr.push(wave);
-                !isFly && (this.calcMeshArry.push(wave))
+                // !isFly && (this.calcMeshArry.push(wave))
                 // this.calcMeshArry.push(wave)
                 wave.origindata = origindata;
             }
 
             if (attr.type['bar'].show) {
-                height=height*parseFloat(this.option.attr[this.option.type].type.bar.ratio);
+                height = height * parseFloat(this.option.attr[this.option.type].type.bar.ratio);
                 bar = this.createPrism(this.option.R, SphereCoord, height, attr)
                 hotDataMesh.add(bar)
-                !isFly && (this.calcMeshArry.push(bar))
+                // if(!isFly){
+                bar.meshType='point'
+                    this.calcMeshArry.push(bar)
+                // }
+                // !isFly && (this.calcMeshArry.push(bar))
                 // this.calcMeshArry.push(bar)
                 bar.origindata = origindata;
             }
             if (attr.type['cone'].show && !isFly) {
-                ConeMesh = this.createConeMesh(this.option.R * (value-minNum) * attr.type['cone'].height / (maxNum), SphereCoord);//棱锥
+                ConeMesh = this.createConeMesh(this.option.R * (value - minNum) * attr.type['cone'].height / (maxNum), SphereCoord);//棱锥
                 hotDataMesh.add(ConeMesh);
                 this.ConeMeshArry.push(ConeMesh)
-                !isFly && (this.calcMeshArry.push(ConeMesh))
-                // this.calcMeshArry.push(ConeMesh)
+                // !isFly && (this.calcMeshArry.push(ConeMesh))
+                ConeMesh.meshType='point'
+                this.calcMeshArry.push(ConeMesh)
                 ConeMesh.origindata = origindata;
             }
             if (!isFly) {
@@ -1123,8 +1162,8 @@ import lerp from '@sunify/lerp-color'
                 // MeshLambertMaterial   MeshBasicMaterial
                 var material = new THREE.MeshLambertMaterial({
                     color: 0x002222,
-                    transparent:true,
-                    opacity:this.option.baseGlobal.areaOpacity,
+                    transparent: true,
+                    opacity: this.option.baseGlobal.areaOpacity,
                     // side: THREE.BackSide, //背面可见，默认正面可见   THREE.DoubleSide：双面可见
                 })
                 var mesh = new THREE.Mesh(newGeometry, material)
@@ -1140,8 +1179,8 @@ import lerp from '@sunify/lerp-color'
                     color: this.option.baseGlobal.gridColor,
                     // vertexColors: THREE.VertexColors, //使用顶点颜色数据渲染
                     size: this.option.baseGlobal.gridSize || 3,
-                    transparent:true,
-                    opacity:this.option.baseGlobal.gridOpacity,
+                    transparent: true,
+                    opacity: this.option.baseGlobal.gridOpacity,
                 });
                 var mesh = new THREE.Points(newPointGeometry, pointMaterial);
             }
@@ -1179,8 +1218,8 @@ import lerp from '@sunify/lerp-color'
             // 线条渲染几何体顶点数据
             var material = new THREE.LineBasicMaterial({
                 color: this.option.baseGlobal.areaLine, //线条颜色
-                transparent:true,
-                opacity:this.option.baseGlobal.areaLineOpacity,
+                transparent: true,
+                opacity: this.option.baseGlobal.areaLineOpacity,
             });//材质对象
             // var line = new THREE.Line(geometry, material);//线条模型对象
             var line = new THREE.LineLoop(geometry, material);//首尾顶点连线，轮廓闭合
@@ -1194,14 +1233,14 @@ import lerp from '@sunify/lerp-color'
             data.forEach(obj => {
                 var name = obj[this.option.countryName];
                 var value = obj[this.option.valueName];
-                if(this.isLog){
-                    value=Math.log(value);
+                if (this.isLog) {
+                    value = Math.log(value);
                 }
                 var color = null;
                 if (!value) {
                     value = 0;
                 }
-                color=new THREE.Color(lerp(this.option.attr.area.colors, Math.sqrt((value-minNum) / (maxNum-minNum))));
+                color = new THREE.Color(lerp(this.option.attr.area.colors, Math.sqrt((value - minNum) / (maxNum - minNum))));
                 json[name] = {
                     color: color,
                     origindata: obj
@@ -1210,8 +1249,8 @@ import lerp from '@sunify/lerp-color'
             return json;
         },
         getMaxMin(data1, name) {
-            this.isLog=false;
-            var data=$.extend(true,[],data1)
+            this.isLog = false;
+            var data = $.extend(true, [], data1)
             data.sort((d1, d2) => {
                 if (d1[name] > d2[name]) {
                     return 1;
@@ -1219,14 +1258,14 @@ import lerp from '@sunify/lerp-color'
                     return -1;
                 }
             })
-            var min=$.extend(true,{},data[0]);
-            var max=$.extend(true,{},data[data.length - 1]);
-            if(max[this.option.valueName]/min[this.option.valueName]>1){
-                min[this.option.valueName]=Math.log(min[this.option.valueName]);
-                max[this.option.valueName]=Math.log(max[this.option.valueName]);
-                this.isLog=true;
+            var min = $.extend(true, {}, data[0]);
+            var max = $.extend(true, {}, data[data.length - 1]);
+            if (max[this.option.valueName] / min[this.option.valueName] > 1) {
+                min[this.option.valueName] = Math.log(min[this.option.valueName]);
+                max[this.option.valueName] = Math.log(max[this.option.valueName]);
+                this.isLog = true;
             }
-            return [min,max]
+            return [min, max]
         },
         addLigthSphere() {
             if (!this.option.lightSphere.show) {
@@ -1285,15 +1324,15 @@ import lerp from '@sunify/lerp-color'
             this.earth.add(mesh)
             // this.addCloud();
         },
-        addCloud(){
-            var geo = new THREE.SphereBufferGeometry(this.option.R*1.1, 40, 40)
+        addCloud() {
+            var geo = new THREE.SphereBufferGeometry(this.option.R * 1.1, 40, 40)
             var textureLoader = new THREE.TextureLoader(); // TextureLoader创建一个纹理加载器对象
             var globalimg = textureLoader.load("/static/2.png");
             // var globalimg = textureLoader.load(staticpath + '/static/earth.jpg');
             var material = new THREE.MeshLambertMaterial({
                 map: globalimg,
                 transparent: true,
-                color:this.option.baseGlobal.color,
+                color: this.option.baseGlobal.color,
             })
             var mesh = new THREE.Mesh(geo, material);
             this.earth.add(mesh)
@@ -1575,6 +1614,7 @@ import lerp from '@sunify/lerp-color'
                     // console.log("射线投射器的对象 几何体",intersects[0].object.geometry.vertices)
 
                     // intersects.length大于0说明，说明选中了模型
+                    // console.log(this.calcMeshArry)
                     if (intersects.length > 0 && this.option.tooltip.show) {
                         this.chooseMesh = intersects[0].object;
                         this.tooltip.position.copy(intersects[0].point);
@@ -1584,12 +1624,16 @@ import lerp from '@sunify/lerp-color'
                         if (this.chooseMesh.meshType == 'area') {
                             // console.log(this.chooseMesh)
                             this.chooseMesh.material.color.set(this.option.baseGlobal.hoverColor)
-                            if(this.option.type=='area' && this.chooseMesh.origindata){
+                            if (this.option.type == 'area' && this.chooseMesh.origindata) {
                                 var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
                                 this.tooltip.element.innerHTML = content;
                             }
                         }
                         if (this.chooseMesh.meshType == 'flyline' && this.chooseMesh.origindata) {
+                            var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
+                            this.tooltip.element.innerHTML = content;
+                        }
+                        if (this.chooseMesh.meshType == 'point' && this.chooseMesh.origindata) {
                             var content = (this.calcTextTooltip(this.option.tooltip.content, this.chooseMesh.origindata))
                             this.tooltip.element.innerHTML = content;
                         }
@@ -1621,6 +1665,9 @@ import lerp from '@sunify/lerp-color'
             html.innerHTML = content;
             html.querySelectorAll(".bi-label-field").forEach(function (el) {
                 var field = el.getAttribute("data-key");
+                if (field == that.option.valueName && that.option.formatValue) {
+                    field = that.option.formatValue;
+                }
                 if (el && el.children) {
                     while (el && el.children.length >= 1) {
                         el = el.children[0]

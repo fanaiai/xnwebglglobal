@@ -25,34 +25,33 @@
 <div id="globeArea" style="width: 800px; height: 800px"></div>
 </body>
 <script type="module">
-    var option ={
+    var option = {
         "baseGlobal": {
             "areaOpacity": "0.4",
             "color": "#000000",
             "areaColor": "rgba(144,202,249,1)",
             "gridStep": "2",
-            "texture": {
-                "img": "/bi/api/picture/query?pictureId=7cff66c2c5f3422a95a1bac83d3408d3",
-                "show": false
-            },
+            "texture": {"img": "/bi/api/picture/query?pictureId=7cff66c2c5f3422a95a1bac83d3408d3", "show": true},
             "countryPolygonType": "area",
             "areaLine": "rgba(37,198,218,1)",
-            "showArea": true,
+            "showArea": false,
             "areaLineOpacity": "0.5",
             "gridSize": "2",
             "gridColor": "rgba(144,202,249,1)",
-            "showLine": true,
+            "showLine": false,
             "opacity": ".8"
         },
-        "R": "130",
+        "R": "150",
         "backgroundColor": "rgba(0,0,0,0)",
         "tooltip": {
             "backgroundColor": "rgba(0,0,0,.8)",
             "color": "#fff",
-            "content": ""
+            "show": true,
+            "content": "<p class=\"paragraph\"><span class=\"bi-label-field\" data-key=\"countryname\" contenteditable=\"false\">countryname</span>&nbsp;<span class=\"bi-label-field\" data-key=\"ZKWZI2\" contenteditable=\"false\">ZKWZI2</span>元</p>"
         },
         "backgroundOpacity": "0",
         "label": {
+            "wordAvoidance":true,
             "start": {
                 "padding": 4,
                 "backgroundColor": "rgba(239,108,0,1)",
@@ -61,7 +60,7 @@
                 "borderRadius": 4,
                 "backgroundImage": "",
                 "borderWidth": "0",
-                "show": true,
+                "show": false,
                 "backgroundSize": "",
                 "fontSize": 12,
                 "borderStyle": "solid",
@@ -69,8 +68,8 @@
             },
             "end": {
                 "padding": 4,
-                "backgroundColor": "rgba(0,180,255,0.52)",
-                "borderColor": "rgba(255,255,255,1)",
+                "backgroundColor": "rgba(1,87,155,1)",
+                "borderColor": "rgba(78,195,247,1)",
                 "color": "#fff",
                 "borderRadius": 4,
                 "backgroundImage": "",
@@ -79,205 +78,260 @@
                 "backgroundSize": "",
                 "fontSize": 12,
                 "borderStyle": "solid",
-                "content": "<p class=\"paragraph\"><span class=\"colour\" style=\"color:rgba(0,180,255,0.52)\"></span><span class=\"colour\" style=\"color:rgba(0,180,255,1)\"></span><span class=\"bi-label-field\" data-key=\"name_cn\" contenteditable=\"false\">name_cn</span>&nbsp; &nbsp; <span class=\"bi-label-field\" data-key=\"ZKWZI2\" contenteditable=\"false\">ZKWZI2</span>元<br></p>"
+                "content": "<p class=\"paragraph\"><span class=\"bi-label-field\" data-key=\"name_cn\" contenteditable=\"false\"><span class=\"size\" style=\"font-size: 16px\">name_cn</span></span><span class=\"size\" style=\"font-size: 16px\">&nbsp;&nbsp;</span><span class=\"bi-label-field\" data-key=\"ZKWZI2\" contenteditable=\"false\"><span class=\"size\" style=\"font-size: 16px\">ZKWZI2</span></span><span class=\"size\" style=\"font-size: 16px\">&nbsp;元</span><br></p>"
             }
         },
         "type": "fly",
         "attr": {
-            "area": {
-                "colors": [
-                    "#ff0000",
-                    "#ffffff"
-                ]
-            },
+            "area": {"colors": ["#ff0000", "#ffffff"]},
             "fly": {
                 "type": {
-                    "lightBar": {
-                        "show": true,
-                        "width": 0.12,
-                        "ratio": "0.4"
-                    },
-                    "bar": {
-                        "radiusBottom": 2,
-                        "show": false,
-                        "radiusTop": 2,
-                        "segments": "4"
-                    },
+                    "lightBar": {"show": true, "width": 0.12, "ratio": "0.4"},
+                    "bar": {"radiusBottom": 2, "show": false, "radiusTop": 2, "segments": "4"},
                     "flyLine": {
                         "dashSize": 3,
                         "color": "rgba(255,84,84,1)",
                         "lineType": "Dashed",
-                        "show": true,
+                        "show": false,
                         "width": 1,
                         "gapSize": 1
                     },
-                    "flyPoint": {
-                        "pointSize": 6,
-                        "color": "#ffaa00",
-                        "len": 0.2,
-                        "show": true
-                    },
-                    "cone": {
-                        "show": true,
-                        "height": 0.0625,
-                        "ratio": 3,
-                        "segments": 4
-                    },
-                    "wave": {
-                        "show": true,
-                        "width": 0.22
-                    },
-                    "circleLight": {
-                        "show": true,
-                        "width": 0.12
-                    }
-                },
-                "colors": [
-                    "rgba(255,210,0,1)",
-                    "#ffff4a"
-                ]
+                    "flyPoint": {"pointSize": "3", "color": "#ffaa00", "len": 0.2, "show": true},
+                    "cone": {"show": true, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["rgba(255,210,0,1)", "rgba(245,124,2,1)", "rgba(230,81,0,1)", "rgba(239,83,79,1)"]
             },
             "hot": {
                 "type": {
-                    "lightBar": {
-                        "show": true,
-                        "width": 0.12
-                    },
-                    "bar": {
-                        "radiusBottom": 4,
-                        "show": false,
-                        "radiusTop": 4,
-                        "segments": 4
-                    },
-                    "cone": {
-                        "show": false,
-                        "height": 0.0625,
-                        "ratio": 3,
-                        "segments": 4
-                    },
-                    "wave": {
-                        "show": true,
-                        "width": 0.22
-                    },
-                    "circleLight": {
-                        "show": true,
-                        "width": 0.12
-                    }
-                },
-                "colors": [
-                    "#2c8ad7",
-                    "#3bd5ac",
-                    "#d5860c"
-                ]
+                    "lightBar": {"show": true, "width": 0.12},
+                    "bar": {"radiusBottom": 4, "show": false, "radiusTop": 4, "segments": 4},
+                    "cone": {"show": false, "height": 0.0625, "ratio": 3, "segments": 4},
+                    "wave": {"show": true, "width": 0.22},
+                    "circleLight": {"show": true, "width": 0.12}
+                }, "colors": ["#2c8ad7", "#3bd5ac", "#d5860c"]
             }
         },
-        "animate": {
-            "rotateStep": "0.006",
-            "open": true
-        },
-        "lightSphere": {
-            "color": "rgba(10,61,122,1)",
-            "show": true,
-            "opacity": "4"
-        },
-        "data": [
-            {
-                "ZKWZI2": 1722634881.8,
-                "countryname": "中国",
-                "location": "116.2,39.55",
-                "name_cn": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "172,263万"
-            },
-            {
-                "ZKWZI2": 1632645,
-                "countryname": "中国",
-                "location": "77.13,28.37",
-                "name_cn": "印度",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "163万"
-            },
-            {
-                "ZKWZI2": 112800,
-                "countryname": "中国",
-                "location": "4.54,52.23",
-                "name_cn": "荷兰",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "11万"
-            },
-            {
-                "ZKWZI2": 360000,
-                "countryname": "中国",
-                "location": "114.3,48.04",
-                "name_cn": "蒙古",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "36万"
-            },
-            {
-                "ZKWZI2": 7195729.68,
-                "countryname": "中国",
-                "location": "12.34,55.41",
-                "name_cn": "丹麦",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "720万"
-            },
-            {
-                "ZKWZI2": 1476853.96,
-                "countryname": "中国",
-                "location": "-77.02,39.91",
-                "name_cn": "美国",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "148万"
-            },
-            {
-                "ZKWZI2": 333200,
-                "countryname": "中国",
-                "location": "100.35,13.45",
-                "name_cn": "泰国",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "33万"
-            },
-            {
-                "ZKWZI2": 4800473.4,
-                "countryname": "中国",
-                "location": "114.10,22.20",
-                "name_cn": "中国香港",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "480万"
-            },
-            {
-                "ZKWZI2": 43958000,
-                "countryname": "中国",
-                "location": "103.45,1.22",
-                "name_cn": "新加坡",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "4,396万"
-            },
-            {
-                "ZKWZI2": 1006400,
-                "countryname": "中国",
-                "location": "10.11,36.5",
-                "name_cn": "突尼斯",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "101万"
-            },
-            {
-                "ZKWZI2": 517500,
-                "countryname": "中国",
-                "location": "73.1,33.4",
-                "name_cn": "巴基斯坦",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "52万"
-            },
-            {
-                "ZKWZI2": 2280000,
-                "countryname": "中国",
-                "location": "32.54,39.57",
-                "name_cn": "土耳其",
-                "lonlat": "116.2,39.55",
-                "$$_formatValue": "228万"
-            }
-        ],
+        "animate": {"rotateStep": "0.006", "open": true},
+        "lightSphere": {"color": "rgba(10,61,122,1)", "show": true, "opacity": "4"},
+        "data": [{
+            "ZKWZI2": 11010294641.86,
+            "countryname": "中国",
+            "location": "116.2,39.55",
+            "name_cn": "中国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,101,029万"
+        }, {
+            "ZKWZI2": 172793912.08,
+            "countryname": "中国",
+            "location": "32.54,39.57",
+            "name_cn": "土耳其",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "17,279万"
+        }, {
+            "ZKWZI2": 148523400.25,
+            "countryname": "中国",
+            "location": "-70.4,-33.24",
+            "name_cn": "智利",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "14,852万"
+        }, {
+            "ZKWZI2": 79200000,
+            "countryname": "中国",
+            "location": "-99.1,19.2",
+            "name_cn": "墨西哥",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "7,920万"
+        }, {
+            "ZKWZI2": 60000000,
+            "countryname": "中国",
+            "location": "-47.55,-15.47",
+            "name_cn": "巴西",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "6,000万"
+        }, {
+            "ZKWZI2": 52799359.2,
+            "countryname": "中国",
+            "location": "-74,4.34",
+            "name_cn": "哥伦比亚",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "5,280万"
+        }, {
+            "ZKWZI2": 48601473.4,
+            "countryname": "中国",
+            "location": "114.10,22.20",
+            "name_cn": "中国香港",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "4,860万"
+        }, {
+            "ZKWZI2": 40001000,
+            "countryname": "中国",
+            "location": "106.49,-6.09",
+            "name_cn": "印度尼西亚",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "4,000万"
+        }, {
+            "ZKWZI2": 34673200,
+            "countryname": "中国",
+            "location": "100.35,13.45",
+            "name_cn": "泰国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "3,467万"
+        }, {
+            "ZKWZI2": 33061280,
+            "countryname": "中国",
+            "location": "-61.24,15.2",
+            "name_cn": "多米尼加",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "3,306万"
+        }, {
+            "ZKWZI2": 32550000,
+            "countryname": "中国",
+            "location": "-56.11,-34.5",
+            "name_cn": "乌拉圭",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "3,255万"
+        }, {
+            "ZKWZI2": 21000000,
+            "countryname": "中国",
+            "location": "121.03,14.4",
+            "name_cn": "菲律宾",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "2,100万"
+        }, {
+            "ZKWZI2": 18500000,
+            "countryname": "中国",
+            "location": "-78.35,-0.15",
+            "name_cn": "厄瓜多尔",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,850万"
+        }, {
+            "ZKWZI2": 17800000,
+            "countryname": "中国",
+            "location": "-89.1,13.4",
+            "name_cn": "萨尔瓦多",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,780万"
+        }, {
+            "ZKWZI2": 15000000,
+            "countryname": "中国",
+            "location": "104.55,11.33",
+            "name_cn": "柬埔寨",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,500万"
+        }, {
+            "ZKWZI2": 12699765.41,
+            "countryname": "中国",
+            "location": "12.34,55.41",
+            "name_cn": "丹麦",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,270万"
+        }, {
+            "ZKWZI2": 12000000,
+            "countryname": "中国",
+            "location": "31.02,-17.43",
+            "name_cn": "津巴布韦",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "1,200万"
+        }, {
+            "ZKWZI2": 8032156,
+            "countryname": "中国",
+            "location": "103.45,1.22",
+            "name_cn": "新加坡",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "803万"
+        }, {
+            "ZKWZI2": 6900000,
+            "countryname": "中国",
+            "location": "101.41,3.09",
+            "name_cn": "马来西亚",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "690万"
+        }, {
+            "ZKWZI2": 6000000,
+            "countryname": "中国",
+            "location": "49.56,40.29",
+            "name_cn": "阿塞拜疆",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "600万"
+        }, {
+            "ZKWZI2": 3840045,
+            "countryname": "中国",
+            "location": "77.13,28.37",
+            "name_cn": "印度",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "384万"
+        }, {
+            "ZKWZI2": 3440000,
+            "countryname": "中国",
+            "location": "30.28,50.3",
+            "name_cn": "乌克兰",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "344万"
+        }, {
+            "ZKWZI2": 1950000,
+            "countryname": "中国",
+            "location": "42.2,11.08",
+            "name_cn": "吉布提",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "195万"
+        }, {
+            "ZKWZI2": 1648000,
+            "countryname": "中国",
+            "location": "2.42,6.23",
+            "name_cn": "贝宁",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "165万"
+        }, {
+            "ZKWZI2": 1630101.69,
+            "countryname": "中国",
+            "location": "-77.02,39.91",
+            "name_cn": "美国",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "163万"
+        }, {
+            "ZKWZI2": 1527000,
+            "countryname": "中国",
+            "location": "10.11,36.5",
+            "name_cn": "突尼斯",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "153万"
+        }, {
+            "ZKWZI2": 700000,
+            "countryname": "中国",
+            "location": "55.17,25.13",
+            "name_cn": "阿联酋",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "70万"
+        }, {
+            "ZKWZI2": 517500,
+            "countryname": "中国",
+            "location": "73.1,33.4",
+            "name_cn": "巴基斯坦",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "52万"
+        }, {
+            "ZKWZI2": 414000,
+            "countryname": "中国",
+            "location": "114.3,48.04",
+            "name_cn": "蒙古",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "41万"
+        }, {
+            "ZKWZI2": 120000,
+            "countryname": "中国",
+            "location": "4.54,52.23",
+            "name_cn": "荷兰",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "12万"
+        }, {
+            "ZKWZI2": 32340,
+            "countryname": "中国",
+            "location": "27.3,53.52",
+            "name_cn": "白俄罗斯",
+            "lonlat": "116.2,39.55",
+            "$$_formatValue": "3万"
+        }],
         "countryName": "countryname",
         "lonlat": "lonlat",
         "toLonlat": "location",
