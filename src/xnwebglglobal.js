@@ -526,7 +526,8 @@ import lerp from '@sunify/lerp-color'
             // var [min, max] = this.getMaxMin(this.option.data, this.option.valueName);
             // var maxNum = max[this.option.valueName];
             // var minNum = min[this.option.valueName];
-            this.addHotItems(hotDataMesh);
+            if (!isFly) {
+            this.addHotItems(hotDataMesh);}
             // if (!isFly) {
             //     this.option.data.forEach((obj, i) => {
             //         var value = obj[this.option.valueName];
