@@ -29,7 +29,7 @@
         "baseGlobal": {
             "areaOpacity": 1,
             "color": "#000000",
-            "areaColor": "rgba(230,81,0,1)",
+            "areaColor": "#071c1c",
             "gridStep": 2,
             "texture": {
                 "img": "",
@@ -37,16 +37,23 @@
             },
             "gridOpacity": 1,
             "countryPolygonType": "area",
-            "areaLine": "rgba(255,255,255,1)",
+            "areaLine": "#00ccc2",
             "showArea": true,
             "areaLineOpacity": 1,
             "gridSize": 2,
             "gridColor": "#00ccc2",
-            "showLine": true,
+            "showLine": false,
             "opacity": 1
         },
         "R": 130,
         "backgroundColor": "#000000",
+        "legend": {
+            "color": "#ffffff",
+            "show": true,
+            "position": {},
+            "type": "segment",
+            "direction": "verticle"
+        },
         "tooltip": {
             "padding": 4,
             "backgroundColor": "rgba(8,85,139,.8)",
@@ -85,7 +92,7 @@
                 ],
                 "hideLabel": false
             },
-            "wordAvoidance": true,
+            "wordAvoidance": false,
             "end": {
                 "padding": 4,
                 "backgroundColor": "rgba(8,85,139,.8)",
@@ -94,14 +101,14 @@
                 "borderRadius": 4,
                 "backgroundImage": "",
                 "borderWidth": 1,
-                "show": false,
+                "show": true,
                 "backgroundSize": "",
                 "fontSize": 12,
                 "borderStyle": "solid",
                 "content": ""
             }
         },
-        "type": "fly",
+        "type": "hot",
         "attr": {
             "area": {
                 "colors": [
@@ -198,24 +205,28 @@
             "open": true
         },
         "lightSphere": {
-            "color": "rgba(3,136,209,1)",
+            "color": "#048989",
             "show": true,
             "opacity": 2
         },
         "layer": [
             {
                 "col": "money",
+                "legend": {
+                    "show": true
+                },
                 "type": {
                     "area": {
                         "show": true,
                         "colors": [
                             "#ffffff",
-                            "#ff0000"
+                            "#ff0000",
+                            "rgba(151,151,151,1)"
                         ]
                     },
                     "lightBar": {
-                        "show": false,
-                        "width": "0.012",
+                        "show": true,
+                        "width": "0.12",
                         "ratio": 1
                     },
                     "bar": {
@@ -232,8 +243,8 @@
                         "segments": 4
                     },
                     "wave": {
-                        "show": true,
-                        "width": "0.22"
+                        "show": false,
+                        "width": "0.052"
                     },
                     "circleLight": {
                         "show": true,
@@ -241,8 +252,9 @@
                     }
                 },
                 "colors": [
-                    "rgba(129,199,132,1)",
-                    "rgba(26,94,32,1)"
+                    "rgba(247,223,143,1)",
+                    "rgba(255,193,6,1)",
+                    "rgba(239,83,79,1)"
                 ]
             }
         ],
@@ -251,380 +263,254 @@
                 "zuobiao": "77.13,28.37",
                 "ZKUNNR_ZLANDX": "印度",
                 "money": 8005786.76,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "印度",
                 "$$_format_money": 8005786.76,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "77.13,28.37"
             },
             {
                 "zuobiao": "114.10,22.20",
                 "ZKUNNR_ZLANDX": "中国香港",
                 "money": 50713509.8,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "中国香港",
                 "$$_format_money": 50713509.8,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "114.10,22.20"
             },
             {
                 "zuobiao": "12.34,55.41",
                 "ZKUNNR_ZLANDX": "丹麦",
                 "money": 12796227.41,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "丹麦",
                 "$$_format_money": 12796227.41,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "12.34,55.41"
             },
             {
                 "zuobiao": "-77.02,39.91",
                 "ZKUNNR_ZLANDX": "美国",
                 "money": 2545355.72,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "美国",
                 "$$_format_money": 2545355.72,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-77.02,39.91"
             },
             {
                 "zuobiao": "4.54,52.23",
                 "ZKUNNR_ZLANDX": "荷兰",
                 "money": 120000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "荷兰",
                 "$$_format_money": 120000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "4.54,52.23"
             },
             {
                 "zuobiao": "114.3,48.04",
                 "ZKUNNR_ZLANDX": "蒙古",
                 "money": 414000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "蒙古",
                 "$$_format_money": 414000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "114.3,48.04"
             },
             {
                 "zuobiao": "100.35,13.45",
                 "ZKUNNR_ZLANDX": "泰国",
                 "money": 48939600,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "泰国",
                 "$$_format_money": 48939600,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "100.35,13.45"
             },
             {
                 "zuobiao": "32.54,39.57",
                 "ZKUNNR_ZLANDX": "土耳其",
                 "money": 294038442.08,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "土耳其",
                 "$$_format_money": 294038442.08,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "32.54,39.57"
             },
             {
                 "zuobiao": "10.11,36.5",
                 "ZKUNNR_ZLANDX": "突尼斯",
                 "money": 2031000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "突尼斯",
                 "$$_format_money": 2031000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "10.11,36.5"
             },
             {
                 "zuobiao": "73.1,33.4",
                 "ZKUNNR_ZLANDX": "巴基斯坦",
                 "money": 517500,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "巴基斯坦",
                 "$$_format_money": 517500,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "73.1,33.4"
             },
             {
                 "zuobiao": "103.45,1.22",
                 "ZKUNNR_ZLANDX": "新加坡",
                 "money": 8408156,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "新加坡",
                 "$$_format_money": 8408156,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "103.45,1.22"
             },
             {
                 "zuobiao": "106.49,-6.09",
                 "ZKUNNR_ZLANDX": "印度尼西亚",
                 "money": 385910091.42,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "印度尼西亚",
                 "$$_format_money": 385910091.42,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "106.49,-6.09"
             },
             {
                 "zuobiao": "-47.55,-15.47",
                 "ZKUNNR_ZLANDX": "巴西",
                 "money": 235000017.5,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "巴西",
                 "$$_format_money": 235000017.5,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-47.55,-15.47"
             },
             {
                 "zuobiao": "128.36,35.52",
                 "ZKUNNR_ZLANDX": "韩国",
                 "money": 1495185.5,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "韩国",
                 "$$_format_money": 1495185.5,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "128.36,35.52"
             },
             {
                 "zuobiao": "-70.4,-33.24",
                 "ZKUNNR_ZLANDX": "智利",
                 "money": 148523400.25,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "智利",
                 "$$_format_money": 148523400.25,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-70.4,-33.24"
             },
             {
                 "zuobiao": "-99.1,19.2",
                 "ZKUNNR_ZLANDX": "墨西哥",
                 "money": 88650000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "墨西哥",
                 "$$_format_money": 88650000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-99.1,19.2"
             },
             {
                 "zuobiao": "-74,4.34",
                 "ZKUNNR_ZLANDX": "哥伦比亚",
                 "money": 52799359.2,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "哥伦比亚",
                 "$$_format_money": 52799359.2,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-74,4.34"
             },
             {
                 "zuobiao": "-61.24,15.2",
                 "ZKUNNR_ZLANDX": "多米尼加",
                 "money": 33061280,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "多米尼加",
                 "$$_format_money": 33061280,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-61.24,15.2"
             },
             {
                 "zuobiao": "-56.11,-34.5",
                 "ZKUNNR_ZLANDX": "乌拉圭",
                 "money": 32550000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "乌拉圭",
                 "$$_format_money": 32550000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-56.11,-34.5"
             },
             {
                 "zuobiao": "101.41,3.09",
                 "ZKUNNR_ZLANDX": "马来西亚",
                 "money": 17376190.5,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "马来西亚",
                 "$$_format_money": 17376190.5,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "101.41,3.09"
             },
             {
                 "zuobiao": "27.3,53.52",
                 "ZKUNNR_ZLANDX": "白俄罗斯",
                 "money": 32340,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "白俄罗斯",
                 "$$_format_money": 32340,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "27.3,53.52"
             },
             {
                 "zuobiao": "55.17,25.13",
                 "ZKUNNR_ZLANDX": "阿联酋",
                 "money": 700000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "阿联酋",
                 "$$_format_money": 700000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "55.17,25.13"
             },
             {
                 "zuobiao": "42.2,11.08",
                 "ZKUNNR_ZLANDX": "吉布提",
                 "money": 1970160,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "吉布提",
                 "$$_format_money": 1970160,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "42.2,11.08"
             },
             {
                 "zuobiao": "2.42,6.23",
                 "ZKUNNR_ZLANDX": "贝宁",
                 "money": 1648000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "贝宁",
                 "$$_format_money": 1648000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "2.42,6.23"
             },
             {
                 "zuobiao": "31.02,-17.43",
                 "ZKUNNR_ZLANDX": "津巴布韦",
                 "money": 12000000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "津巴布韦",
                 "$$_format_money": 12000000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "31.02,-17.43"
             },
             {
                 "zuobiao": "30.28,50.3",
                 "ZKUNNR_ZLANDX": "乌克兰",
                 "money": 3440000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "乌克兰",
                 "$$_format_money": 3440000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "30.28,50.3"
             },
             {
                 "zuobiao": "104.55,11.33",
                 "ZKUNNR_ZLANDX": "柬埔寨",
                 "money": 15000000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "柬埔寨",
                 "$$_format_money": 15000000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "104.55,11.33"
             },
             {
                 "zuobiao": "-89.1,13.4",
                 "ZKUNNR_ZLANDX": "萨尔瓦多",
                 "money": 17800000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "萨尔瓦多",
                 "$$_format_money": 17800000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-89.1,13.4"
             },
             {
                 "zuobiao": "-78.35,-0.15",
                 "ZKUNNR_ZLANDX": "厄瓜多尔",
                 "money": 37000000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "厄瓜多尔",
                 "$$_format_money": 37000000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "-78.35,-0.15"
             },
             {
                 "zuobiao": "121.03,14.4",
                 "ZKUNNR_ZLANDX": "菲律宾",
                 "money": 21000000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "菲律宾",
                 "$$_format_money": 21000000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "121.03,14.4"
             },
             {
                 "zuobiao": "49.56,40.29",
                 "ZKUNNR_ZLANDX": "阿塞拜疆",
                 "money": 6000000,
-                "countryname": "中国",
-                "lonlat": "116.2,39.55",
-                "$$_format_countryname": "中国",
                 "$$_format_ZKUNNR_ZLANDX": "阿塞拜疆",
                 "$$_format_money": 6000000,
-                "$$_format_lonlat": "116.2,39.55",
                 "$$_format_zuobiao": "49.56,40.29"
             }
         ],
-        "countryName": "countryname",
-        "lonlat": "lonlat",
-        "toLonlat": "zuobiao",
-        "valueName": "money",
-        "toCountryName": "ZKUNNR_ZLANDX"
+        "countryName": "ZKUNNR_ZLANDX",
+        "lonlat": "zuobiao",
+        "valueName": "money"
     };
     var xnwebglglobal = new XNWebglGlobal(document.getElementById("globeArea"), option)
     document.querySelector('#destory').addEventListener('click', e => {

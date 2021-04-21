@@ -16,3 +16,65 @@ body{
 .xnwebglobal-tooltip{
     padding:4px 6px;
 }
+.xnwebglobal-legend{
+    text-align: center;
+    width: 20px;
+    font-size: 12px;
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    color: #fff;
+    user-select: none;
+}
+.xnwebglobal-legend p{
+    user-select: none;
+}
+.xnwebglobal-legend .legend-bar{
+    width: 20px;
+    height:120px;
+    position: relative;
+}
+.xnwebglobal-legend .legend-bar .color-bar{
+    position: absolute;
+    width: 100%;
+    height:100%;
+    top:0;
+    left: 0;
+    background:linear-gradient(red,blue,yellow);
+    cursor: ns-resize;
+    padding-bottom:8px;
+}
+.xnwebglobal-legend .legend-bar .ope-bar{
+    position: absolute;
+    top:0;
+    left: 0;
+    margin:0;
+    display: flex;
+    align-items: center;
+    height: 8px;
+}
+.xnwebglobal-legend .legend-bar .ope-bar .bar{
+    width: 24px;
+    height: 8px;
+    background: #fff;
+    margin-right: 8px;
+    cursor: ns-resize;
+    margin-left: -2px;
+    box-shadow: 0px 0px 6px -2px #000;
+}
+.xnwebglobal-legend .legend-bar .max-bar{
+    /*align-items: flex-start;*/
+}
+.xnwebglobal-legend .legend-bar .min-bar{
+    /*align-items: flex-end;*/
+    /*bottom:0;*/
+    top: 100%;
+    /*margin-top:-22px;*/
+}
+.xnwebglobal-legend .min-text{
+    margin-top:12px;
+}
+.xnwebglobal-legend .max-text{
+    margin-bottom:4px;
+}
+

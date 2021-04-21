@@ -181,6 +181,7 @@ import lerp from '@sunify/lerp-color'
 
     function XNWebglGlobal(dom, options) {
         this.dom = dom;
+        this.legendData = {};
         this.dom.innerHTML = ''
         dom.classList.add("xnglobal-container");
         this.id = this.getRandomString();
@@ -205,10 +206,156 @@ import lerp from '@sunify/lerp-color'
             this.tooltip = this.addtooltip();
             this.scene.add(this.tooltip);
         }
+        this.initLegendData();
+        this.addLegendEvent();
         this.addEvent();
     }
 
     XNWebglGlobal.prototype = {
+        setLegend(legend, field,colors) {
+            if (legend) {
+                let {min, max} = this._getMaxMinFunc(this.option.data, field);
+                this.legendData[field] = {
+                    min: min,
+                    max: max,
+                    curmin: min,
+                    curmax: max,
+                    colors: colors,
+                    attr:legend
+                }
+            }
+        },
+        initLegendData() {
+            if (this.option.layer && this.option.layer.length > 0) {
+                for (let i = 0; i < this.option.layer.length; i++) {
+                    let field = this.option.layer[i].col;
+                    let legend = this.option.layer[i].legend;
+                    if(!legend.show){
+                        continue;
+                    }
+                    let colors=this.option.layer[i].colors;
+                    if(this.option.layer[i].type.area.show){
+                        colors=this.option.layer[i].type.area.colors
+                    }
+                    this.setLegend(legend, field,colors);
+                }
+            } else {
+                if(this.option.legend.show){
+                    this.setLegend(this.option.legend, this.option.valueName,this.option.attr[this.option.type].colors);
+                }
+            }
+            let key=0;
+            for (let i in this.legendData) {
+                this.addLegendDom(i,key);
+                key++;
+            }
+        },
+        addLegendDom(id,key) {
+            let legend = this.legendData[id]
+            let background = $.extend(true, [], legend.colors).reverse().join(",")
+            let dom = `<div class="xnwebglobal-legend" data-legendkey="${id}" style="left:${key * 100+30}px;color:${legend.attr.color}">
+    <p class="max-text">高</p>
+    <div class="legend-bar">
+        <div class="color-bar" style="background:linear-gradient(${background})"></div>
+        <div class="max-bar ope-bar">
+            <div class="bar" data-key="max"></div>
+            <p>${legend.max}</p>
+        </div>
+        <div class="min-bar ope-bar">
+            <div class="bar" data-key="min"></div>
+            <p>${legend.min}</p>
+        </div>
+    </div>
+    <p class="min-text">低</p>
+</div>`
+            $(this.dom).append(dom);
+        },
+        addLegendEvent() {
+            let down = false;
+            let ele = {}
+            this.dom.addEventListener('mousedown', (e) => {
+                let $t = $(e.target);
+                if ($t.hasClass("bar")) {
+                    down = true;
+                    ele.key = $t.attr("data-key");
+                    ele.id = $t.parents(".xnwebglobal-legend").attr("data-legendkey")
+                    ele.$colorBar = $t.parents(".xnwebglobal-legend").find(".legend-bar")
+                    ele.$dom = $t.parent();
+                    ele.bar = $t.attr("data-key");
+                    ele.height = ele.$colorBar.get(0).getBoundingClientRect().height;
+                    ele.$legendDom = $t.parents(".xnwebglobal-legend");
+                }
+            })
+            document.addEventListener('mousemove', (e) => {
+                let $t = $(e.target);
+                if (down) {
+                    let legend = this.legendData[ele.id]
+                    var top = e.clientY - ele.$colorBar.get(0).getBoundingClientRect().top;
+                    if (top < 0) {
+                        top = 0;
+                    }
+                    if (top > ele.height) {
+                        top = ele.height;
+                    }
+                    let value = (legend.max - legend.min) * (ele.height - top) / ele.height + legend.min;
+                    if(legend.max>10){
+                        value=parseInt(value);
+                    }
+                    else{//10以内的数，最多保留1位小数
+                        value=Math.round(value * 10) / 10
+                    }
+                    legend['cur' + ele.bar] = value;
+                    let otherbar = ele.bar == 'min' ? 'max' : 'min';
+                    var equal = false;
+                    if (ele.bar == 'min') {
+                        if (value > legend.curmax) {
+                            equal = true;
+                        }
+                    }
+                    if (ele.bar == 'max') {
+                        if (value < legend.curmin) {
+                            equal = true;
+                        }
+                    }
+                    if (equal) {
+                        legend['cur' + otherbar] = value;
+                        ele.$legendDom.find('.' + otherbar + '-bar').css('top', top + 'px');
+                        ele.$legendDom.find('.' + otherbar + '-bar').find('p').html(value);
+                    }
+                    ele.$dom.css("top", top + 'px')
+                    ele.$dom.find('p').html(value);
+                    this.updateItemsVisible(ele.id, legend);
+                }
+            })
+            document.addEventListener('mouseup', (e) => {
+                let $t = $(e.target);
+                down = false;
+            })
+        },
+        updateItemsVisible(id, legend) {
+            this.hotDataMesh.children.forEach(e => {
+                let v = e.origindata[id]
+                e.origindata.$$_hide=false;
+                e.visible = true;
+                if (v < legend.curmin || v > legend.curmax) {
+                    e.visible = false;
+                    e.origindata.$$_hide=true;
+                }
+            })
+            this.areaGroup.forEach(e => {
+                let v = e.origindata[id]
+                e.origindata.$$_hide=false;
+                if (v < legend.curmin || v > legend.curmax) {
+                    e.origindata.$$_hide=true;
+                    e.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
+                    // e.color = e.material.color.clone();//自定义颜色属性 用于射线拾取交互
+                }
+                else{
+                    e.material.color.set(e.color);
+                }
+            })
+            this.updateLabelPos();
+        },
         getRandomString(len) {
             len = len || 8;
             var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz';
@@ -497,8 +644,8 @@ import lerp from '@sunify/lerp-color'
         },
         addOneLayerItem(col, attr, hotDataMesh) {
             var [min, max, isLog] = this.getMaxMin(this.option.data, col);
-            var maxNum = max[col];
-            var minNum = min[col];
+            var maxNum = max;
+            var minNum = min;
             this.option.data.forEach((obj, i) => {
                 var value = obj[col];
                 if (isLog) {
@@ -523,6 +670,7 @@ import lerp from '@sunify/lerp-color'
             this.flyArr = [];
             this.ConeMeshArry = []
             var hotDataMesh = new THREE.Group();
+            hotDataMesh.name = 'item'
             // var [min, max] = this.getMaxMin(this.option.data, this.option.valueName);
             // var maxNum = max[this.option.valueName];
             // var minNum = min[this.option.valueName];
@@ -618,6 +766,7 @@ import lerp from '@sunify/lerp-color'
                     }
                 })
             }
+            this.hotDataMesh = hotDataMesh;
             this.earth.add(hotDataMesh)
         },
         getMaxMinFromJSON(json) {
@@ -697,7 +846,7 @@ import lerp from '@sunify/lerp-color'
                 bar.origindata = origindata;
             }
             if (attr.type['cone'].show && !isFly) {
-                ConeMesh = this.createConeMesh(this.option.R * (value - minNum) * attr.type['cone'].height / (maxNum-minNum), SphereCoord);//棱锥
+                ConeMesh = this.createConeMesh(attr,this.option.R * (value - minNum) * attr.type['cone'].height / (maxNum-minNum), SphereCoord);//棱锥
                 hotDataMesh.add(ConeMesh);
                 this.ConeMeshArry.push(ConeMesh)
                 // !isFly && (this.calcMeshArry.push(ConeMesh))
@@ -1126,6 +1275,7 @@ import lerp from '@sunify/lerp-color'
         },
         addarea(isNotArea) {
             this.calcMeshArry = [];
+            this.areaGroup = [];
             this.getWorldData(data => {
                 var dataColor = !isNotArea ? this.calcAreaCountryColor(this.option.data) : null;
                 data.features.forEach((country) => {
@@ -1152,6 +1302,7 @@ import lerp from '@sunify/lerp-color'
                                 mesh.material.color.copy(dataColor[mesh.name].color);
                                 mesh.color = dataColor[mesh.name].color;//自定义颜色属性 用于射线拾取交互
                                 mesh.origindata = dataColor[mesh.name].origindata;//自定义颜色属性 用于射线拾取HTML标签显示
+                                this.areaGroup.push(mesh)
                             } else {
                                 mesh.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
                                 mesh.color = mesh.material.color.clone();//自定义颜色属性 用于射线拾取交互
@@ -1168,6 +1319,7 @@ import lerp from '@sunify/lerp-color'
                                             mesh.material.color.copy(dataColor[mesh.name].color);
                                             mesh.color = dataColor[mesh.name].color;//自定义颜色属性 用于射线拾取交互
                                             mesh.origindata = dataColor[mesh.name].origindata;//自定义颜色属性 用于射线拾取HTML标签显示
+                                            this.areaGroup.push(mesh)
                                         } else {
                                             mesh.material.color.set(this.option.baseGlobal[this.option.baseGlobal.countryPolygonType + 'Color']);
                                             mesh.color = mesh.material.color.clone();//自定义颜色属性 用于射线拾取交互
@@ -1308,8 +1460,8 @@ import lerp from '@sunify/lerp-color'
             // var color1 = new THREE.Color(this.option.attr.area.colors[0]);
             // var color2 = new THREE.Color(this.option.attr.area.colors[1]);
             var [min, max, isLog] = this.getMaxMin(data, col);
-            var maxNum = max[col];
-            var minNum = min[col];
+            var maxNum = max;
+            var minNum = min;
             data.forEach(obj => {
                 var name = obj[this.option.countryName];
                 var value = obj[col];
@@ -1320,7 +1472,6 @@ import lerp from '@sunify/lerp-color'
                 if (!value) {
                     value = 0;
                 }
-                // color = color1.clone().lerp(color2.clone(), Math.sqrt((value - minNum) / maxNum));
                 color = new THREE.Color(lerp(colors, Math.sqrt((value - minNum) / (maxNum - minNum))));
                 json[name] = {
                     color: color,
@@ -1331,6 +1482,18 @@ import lerp from '@sunify/lerp-color'
         },
         getMaxMin(data1, name) {
             let isLog = false;
+            let {min, max} = this._getMaxMinFunc(data1, name)
+            if (max / min > 1) {
+                min = Math.log(min);
+                max = Math.log(max);
+                isLog = true;
+            }
+            if (min == max) {
+                min = 0;
+            }
+            return [min, max, isLog]
+        },
+        _getMaxMinFunc(data1, name) {
             var data = $.extend(true, [], data1)
             data.sort((d1, d2) => {
                 if (d1[name] > d2[name]) {
@@ -1339,17 +1502,9 @@ import lerp from '@sunify/lerp-color'
                     return -1;
                 }
             })
-            var min = $.extend(true, {}, data[0]);
-            var max = $.extend(true, {}, data[data.length - 1]);
-            if (max[name] / min[name] > 1) {
-                min[name] = Math.log(min[name]);
-                max[name] = Math.log(max[name]);
-                isLog = true;
-            }
-            if(min[name]==max[name]){
-                min[name]=0;
-            }
-            return [min, max,isLog]
+            var min = $.extend(true, {}, data[0])[name];
+            var max = $.extend(true, {}, data[data.length - 1])[name];
+            return {min, max}
         },
         addLigthSphere() {
             if (!this.option.lightSphere.show) {
